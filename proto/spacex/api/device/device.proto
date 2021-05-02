@@ -12,15 +12,11 @@ import "spacex/api/device/wifi.proto";
 
 message ToDevice {
 	optional .SpaceX.API.Device.Request request = 1 [json_name="request"];
-	oneof message {
-	}
 }
 
 message FromDevice {
 	optional .SpaceX.API.Device.Response response = 1 [json_name="response"];
 	optional .SpaceX.API.Device.Event event = 2 [json_name="event"];
-	oneof message {
-	}
 }
 
 message Request {
@@ -43,8 +39,6 @@ message Request {
 	optional .SpaceX.API.Device.WifiGetClientsRequest wifi_get_clients = 3002 [json_name="wifiGetClients"];
 	optional .SpaceX.API.Device.WifiSetConfigRequest wifi_set_config = 3001 [json_name="wifiSetConfig"];
 	optional .SpaceX.API.Device.WifiSetupRequest wifi_setup = 3003 [json_name="wifiSetup"];
-	oneof request {
-	}
 }
 
 message Response {
@@ -68,15 +62,11 @@ message Response {
 	optional .SpaceX.API.Device.WifiGetStatusResponse wifi_get_status = 3004 [json_name="wifiGetStatus"];
 	optional .SpaceX.API.Device.WifiSetConfigResponse wifi_set_config = 3001 [json_name="wifiSetConfig"];
 	optional .SpaceX.API.Device.WifiSetupResponse wifi_setup = 3003 [json_name="wifiSetup"];
-	oneof response {
-	}
 }
 
 message Event {
 	optional .SpaceX.API.Device.WifiNewClientConnectedEvent wifi_new_client_connected = 3001 [json_name="wifiNewClientConnected"];
 	optional .SpaceX.API.Device.WifiAccountBondingEvent wifi_account_bonding = 3002 [json_name="wifiAccountBonding"];
-	oneof event {
-	}
 }
 
 message FactoryResetRequest {
@@ -100,6 +90,10 @@ message GetPingRequest {
 
 message GetPingResponse {
 	repeated .SpaceX.API.Device.GetPingResponse.ResultsEntry results = 1 [json_name="results"];
+	message ResultsEntry {
+		optional string key = 1 [json_name="key"];
+		optional .SpaceX.API.Device.PingResult value = 2 [json_name="value"];
+	}
 }
 
 message GetStatusRequest {

@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package SpaceX.API.Device;
+
+option go_package = "spacex.com/api/device";
+
+import "spacex/api/device/device.proto";
+
+service Device {
+    rpc Handle (.SpaceX.API.Device.Request) returns (.SpaceX.API.Device.Response) {}
+    rpc Stream (stream .SpaceX.API.Device.ToDevice) returns (stream .SpaceX.API.Device.FromDevice) {}
+}
