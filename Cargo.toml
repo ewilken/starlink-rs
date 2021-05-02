@@ -1,0 +1,15 @@
+[package]
+name = "starlink"
+version = "0.1.0"
+authors = ["Elias Wilken <elias@wlkn.io>"]
+edition = "2018"
+
+[dependencies]
+tonic = "0.4"
+prost = "0.7"
+# prost-types = "0.7"
+
+[build-dependencies]
+
+[workspace]
+members = ["codegen"]

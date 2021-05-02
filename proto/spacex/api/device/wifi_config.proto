@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package SpaceX.API.Device;
+
+option go_package = "spacex.com/api/device";
+
+message WifiConfig {
+	optional string network_name = 1 [json_name="networkName"];
+	optional string network_password = 2 [json_name="networkPassword"];
+}
+

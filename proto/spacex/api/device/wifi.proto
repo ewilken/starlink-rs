@@ -1,0 +1,74 @@
+syntax = "proto3";
+
+package SpaceX.API.Device;
+
+option go_package = "spacex.com/api/device";
+
+import "spacex/api/device/common.proto";
+import "spacex/api/device/wifi_config.proto";
+
+message WifiSetConfigRequest {
+	optional .SpaceX.API.Device.WifiConfig wifi_config = 1 [json_name="wifiConfig"];
+}
+
+message WifiSetConfigResponse {
+}
+
+message WifiGetClientsRequest {
+}
+
+message WifiGetClientsResponse {
+	repeated .SpaceX.API.Device.WifiClient clients = 1 [json_name="clients"];
+}
+
+message WifiGetHistoryResponse {
+	optional uint64 current = 1 [json_name="current"];
+	repeated float ping_drop_rate = 1001 [json_name="pingDropRate"];
+	repeated float ping_latency_ms = 1002 [json_name="pingLatencyMs"];
+}
+
+message WifiNewClientConnectedEvent {
+	optional .SpaceX.API.Device.WifiClient client = 1 [json_name="client"];
+}
+
+message WifiClient {
+	optional string name = 1 [json_name="name"];
+	optional string mac_address = 2 [json_name="macAddress"];
+	optional string ip_address = 3 [json_name="ipAddress"];
+	optional float signal_strength = 4 [json_name="signalStrength"];
+}
+
+message WifiSetupRequest {
+	optional bool skip = 1 [json_name="skip"];
+	optional string network_name = 2 [json_name="networkName"];
+	optional string network_password = 3 [json_name="networkPassword"];
+}
+
+message WifiSetupResponse {
+}
+
+message WifiGetStatusResponse {
+	optional .SpaceX.API.Device.DeviceInfo device_info = 3 [json_name="deviceInfo"];
+	optional .SpaceX.API.Device.DeviceState device_state = 4 [json_name="deviceState"];
+	optional bool captive_portal_enabled = 1 [json_name="captivePortalEnabled"];
+	repeated .SpaceX.API.Device.WifiClient clients = 2 [json_name="clients"];
+	optional string serial_number = 1001 [json_name="serialNumber"];
+	optional string sku = 1002 [json_name="sku"];
+	optional string ipv4_wan_address = 1003 [json_name="ipv4WanAddress"];
+	optional float ping_drop_rate = 1004 [json_name="pingDropRate"];
+	optional float ping_latency_ms = 1005 [json_name="pingLatencyMs"];
+}
+
+message WifiAuthenticateRequest {
+	optional .SpaceX.API.Device.SignedData challenge = 1 [json_name="challenge"];
+}
+
+message WifiAuthenticateResponse {
+	optional .SpaceX.API.Device.ChallengeResponse wifi = 1 [json_name="wifi"];
+	optional .SpaceX.API.Device.ChallengeResponse dish = 2 [json_name="dish"];
+}
+
+message WifiAccountBondingEvent {
+	optional string dish_id = 1 [json_name="dishId"];
+}
+

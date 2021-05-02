@@ -1,0 +1,9 @@
+[package]
+name = "starlink-codegen"
+version = "0.1.0"
+authors = ["Elias Wilken <elias@wlkn.io>"]
+edition = "2018"
+
+[dependencies]
+prost = "0.7"
+prost-types = "0.7"

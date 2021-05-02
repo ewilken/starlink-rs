@@ -1,0 +1,136 @@
+syntax = "proto3";
+
+package SpaceX.API.Device;
+
+option go_package = "spacex.com/api/device";
+
+import "spacex/api/common/status/status.proto";
+import "spacex/api/device/command.proto";
+import "spacex/api/device/common.proto";
+import "spacex/api/device/dish.proto";
+import "spacex/api/device/wifi.proto";
+
+message ToDevice {
+	optional .SpaceX.API.Device.Request request = 1 [json_name="request"];
+	oneof message {
+	}
+}
+
+message FromDevice {
+	optional .SpaceX.API.Device.Response response = 1 [json_name="response"];
+	optional .SpaceX.API.Device.Event event = 2 [json_name="event"];
+	oneof message {
+	}
+}
+
+message Request {
+	optional uint64 id = 1 [json_name="id"];
+	optional uint64 epoch_id = 14 [json_name="epochId"];
+	optional string target_id = 13 [json_name="targetId"];
+	optional .SpaceX.API.Device.SignedData signed_request = 15 [json_name="signedRequest"];
+	optional .SpaceX.API.Device.GetNextIdRequest get_next_id = 1006 [json_name="getNextId"];
+	optional .SpaceX.API.Device.AuthenticateRequest authenticate = 1005 [json_name="authenticate"];
+	optional .SpaceX.API.Device.FactoryResetRequest factory_reset = 1011 [json_name="factoryReset"];
+	optional .SpaceX.API.Device.GetHistoryRequest get_history = 1007 [json_name="getHistory"];
+	optional .SpaceX.API.Device.GetLogRequest get_log = 1012 [json_name="getLog"];
+	optional .SpaceX.API.Device.GetPingRequest get_ping = 1009 [json_name="getPing"];
+	optional .SpaceX.API.Device.GetDeviceInfoRequest get_device_info = 1008 [json_name="getDeviceInfo"];
+	optional .SpaceX.API.Device.GetStatusRequest get_status = 1004 [json_name="getStatus"];
+	optional .SpaceX.API.Device.RebootRequest reboot = 1001 [json_name="reboot"];
+	optional .SpaceX.API.Device.SetTrustedKeysRequest set_trusted_keys = 1010 [json_name="setTrustedKeys"];
+	optional .SpaceX.API.Device.SpeedTestRequest speed_test = 1003 [json_name="speedTest"];
+	optional .SpaceX.API.Device.DishStowRequest dish_stow = 2002 [json_name="dishStow"];
+	optional .SpaceX.API.Device.WifiGetClientsRequest wifi_get_clients = 3002 [json_name="wifiGetClients"];
+	optional .SpaceX.API.Device.WifiSetConfigRequest wifi_set_config = 3001 [json_name="wifiSetConfig"];
+	optional .SpaceX.API.Device.WifiSetupRequest wifi_setup = 3003 [json_name="wifiSetup"];
+	oneof request {
+	}
+}
+
+message Response {
+	optional uint64 id = 1 [json_name="id"];
+	optional .SpaceX.API.Status.Status status = 2 [json_name="status"];
+	optional .SpaceX.API.Device.GetNextIdResponse get_next_id = 1006 [json_name="getNextId"];
+	optional .SpaceX.API.Device.FactoryResetResponse factory_reset = 1011 [json_name="factoryReset"];
+	optional .SpaceX.API.Device.GetLogResponse get_log = 1012 [json_name="getLog"];
+	optional .SpaceX.API.Device.GetPingResponse get_ping = 1009 [json_name="getPing"];
+	optional .SpaceX.API.Device.RebootResponse reboot = 1001 [json_name="reboot"];
+	optional .SpaceX.API.Device.SpeedTestResponse speed_test = 1003 [json_name="speedTest"];
+	optional .SpaceX.API.Device.GetDeviceInfoResponse get_device_info = 1004 [json_name="getDeviceInfo"];
+	optional .SpaceX.API.Device.SetTrustedKeysResponse set_trusted_keys = 1010 [json_name="setTrustedKeys"];
+	optional .SpaceX.API.Device.DishAuthenticateResponse dish_authenticate = 2005 [json_name="dishAuthenticate"];
+	optional .SpaceX.API.Device.DishGetHistoryResponse dish_get_history = 2006 [json_name="dishGetHistory"];
+	optional .SpaceX.API.Device.DishGetStatusResponse dish_get_status = 2004 [json_name="dishGetStatus"];
+	optional .SpaceX.API.Device.DishStowResponse dish_stow = 2002 [json_name="dishStow"];
+	optional .SpaceX.API.Device.WifiAuthenticateResponse wifi_authenticate = 3005 [json_name="wifiAuthenticate"];
+	optional .SpaceX.API.Device.WifiGetClientsResponse wifi_get_clients = 3002 [json_name="wifiGetClients"];
+	optional .SpaceX.API.Device.WifiGetHistoryResponse wifi_get_history = 3006 [json_name="wifiGetHistory"];
+	optional .SpaceX.API.Device.WifiGetStatusResponse wifi_get_status = 3004 [json_name="wifiGetStatus"];
+	optional .SpaceX.API.Device.WifiSetConfigResponse wifi_set_config = 3001 [json_name="wifiSetConfig"];
+	optional .SpaceX.API.Device.WifiSetupResponse wifi_setup = 3003 [json_name="wifiSetup"];
+	oneof response {
+	}
+}
+
+message Event {
+	optional .SpaceX.API.Device.WifiNewClientConnectedEvent wifi_new_client_connected = 3001 [json_name="wifiNewClientConnected"];
+	optional .SpaceX.API.Device.WifiAccountBondingEvent wifi_account_bonding = 3002 [json_name="wifiAccountBonding"];
+	oneof event {
+	}
+}
+
+message FactoryResetRequest {
+}
+
+message FactoryResetResponse {
+}
+
+message GetHistoryRequest {
+}
+
+message GetLogRequest {
+}
+
+message GetLogResponse {
+	optional string syslog = 1 [json_name="syslog"];
+}
+
+message GetPingRequest {
+}
+
+message GetPingResponse {
+	repeated .SpaceX.API.Device.GetPingResponse.ResultsEntry results = 1 [json_name="results"];
+}
+
+message GetStatusRequest {
+}
+
+message RebootRequest {
+}
+
+message RebootResponse {
+}
+
+message SpeedTestRequest {
+}
+
+message SpeedTestResponse {
+	optional float download_bps = 1 [json_name="downloadBps"];
+	optional float upload_bps = 2 [json_name="uploadBps"];
+	optional float latency_s = 3 [json_name="latencyS"];
+}
+
+message GetDeviceInfoRequest {
+}
+
+message GetDeviceInfoResponse {
+	optional .SpaceX.API.Device.DeviceInfo device_info = 1 [json_name="deviceInfo"];
+}
+
+message SetTrustedKeysRequest {
+	repeated .SpaceX.API.Device.PublicKey keys = 1 [json_name="keys"];
+}
+
+message SetTrustedKeysResponse {
+}
+

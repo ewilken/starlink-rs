@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package SpaceX.API.Device;
+
+option go_package = "spacex.com/api/device";
+
+message PublicKey {
+	optional string key = 1 [json_name="key"];
+	repeated .SpaceX.API.Device.Capability capabilities = 2 [json_name="capabilities"];
+}
+
+enum Capability {
+	READ = 0;
+	WRITE = 1;
+	DEBUG = 2;
+	ADMIN = 3;
+	SETUP = 4;
+}
+

@@ -1,0 +1,65 @@
+syntax = "proto3";
+
+package SpaceX.API.Device;
+
+option go_package = "spacex.com/api/device";
+
+import "spacex/api/device/common.proto";
+
+message DishStowRequest {
+}
+
+message DishStowResponse {
+}
+
+message DishGetHistoryResponse {
+	optional uint64 current = 1 [json_name="current"];
+	repeated float pop_ping_drop_rate = 1001 [json_name="popPingDropRate"];
+	repeated float pop_ping_latency_ms = 1002 [json_name="popPingLatencyMs"];
+	repeated float downlink_throughput_bps = 1003 [json_name="downlinkThroughputBps"];
+	repeated float uplink_throughput_bps = 1004 [json_name="uplinkThroughputBps"];
+	repeated float snr = 1005 [json_name="snr"];
+	repeated bool scheduled = 1006 [json_name="scheduled"];
+	repeated bool obstructed = 1007 [json_name="obstructed"];
+}
+
+message DishGetStatusResponse {
+	optional .SpaceX.API.Device.DeviceInfo device_info = 1 [json_name="deviceInfo"];
+	optional .SpaceX.API.Device.DeviceState device_state = 2 [json_name="deviceState"];
+	optional .SpaceX.API.Device.DishState state = 1006 [json_name="state"];
+	optional .SpaceX.API.Device.DishAlerts alerts = 1005 [json_name="alerts"];
+	optional float snr = 1001 [json_name="snr"];
+	optional float seconds_to_first_nonempty_slot = 1002 [json_name="secondsToFirstNonemptySlot"];
+	optional float pop_ping_drop_rate = 1003 [json_name="popPingDropRate"];
+	optional float downlink_throughput_bps = 1007 [json_name="downlinkThroughputBps"];
+	optional float uplink_throughput_bps = 1008 [json_name="uplinkThroughputBps"];
+	optional float pop_ping_latency_ms = 1009 [json_name="popPingLatencyMs"];
+	optional .SpaceX.API.Device.DishObstructionStats obstruction_stats = 1004 [json_name="obstructionStats"];
+}
+
+message DishAlerts {
+	optional bool motors_stuck = 1 [json_name="motorsStuck"];
+	optional bool thermal_throttle = 3 [json_name="thermalThrottle"];
+	optional bool thermal_shutdown = 2 [json_name="thermalShutdown"];
+}
+
+message DishObstructionStats {
+	optional bool currently_obstructed = 5 [json_name="currentlyObstructed"];
+	optional float fraction_obstructed = 1 [json_name="fractionObstructed"];
+	optional float last_24h_obstructed_s = 1006 [json_name="last24hObstructedS"];
+	optional float valid_s = 4 [json_name="validS"];
+	repeated float wedge_fraction_obstructed = 2 [json_name="wedgeFractionObstructed"];
+	repeated float wedge_abs_fraction_obstructed = 3 [json_name="wedgeAbsFractionObstructed"];
+}
+
+message DishAuthenticateResponse {
+	optional .SpaceX.API.Device.ChallengeResponse dish = 2 [json_name="dish"];
+}
+
+enum DishState {
+	UNKNOWN = 0;
+	CONNECTED = 1;
+	SEARCHING = 2;
+	BOOTING = 3;
+}
+
