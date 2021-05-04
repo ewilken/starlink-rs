@@ -7,7 +7,7 @@ use std::{
 use prost::Message;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let file_descriptor_set_bytes = include_bytes!("../static/dish.protoset");
+    let file_descriptor_set_bytes = include_bytes!("../static/device.protoset");
     let file_descriptor_set = prost_types::FileDescriptorSet::decode(&file_descriptor_set_bytes[..]).unwrap();
 
     // dbg!(&file_descriptor_set);
