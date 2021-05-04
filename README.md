@@ -11,7 +11,7 @@ Rust client implementation to the gRPC endpoint exposed by the SpaceX Starlink u
 
 ## Background
 
-The Starlink dish exposes an unauthenticated gRPC HTTP/2 server on its local network under `192.168.100.1:9200` that allows for [server reflection](https://github.com/grpc/grpc/blob/master/doc/server-reflection.md). This contains the (probably still flawed) Protobuf definitions reversed out of it as well as a Rust client implementation being able to talk to the dish, for science. I might use this to build a Prometheus exporter or something.
+The Starlink dish exposes an unauthenticated gRPC HTTP/2 server on its local network under `192.168.100.1:9200` that allows for [server reflection](https://github.com/grpc/grpc/blob/master/doc/server-reflection.md). This contains the (probably still flawed) Protobuf definitions reversed out of it as well as a Rust client implementation being able to talk to the dish, for science.
 
 The dish exposes two methods (as far as I could tell); one for request/response and one for streams:
 
