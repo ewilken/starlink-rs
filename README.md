@@ -1,6 +1,8 @@
 # starlink-rs
 
 [![CI](https://github.com/ewilken/starlink-rs/workflows/CI/badge.svg)](https://github.com/ewilken/starlink-rs/actions?query=workflow%3ACI)
+[![crates.io](https://img.shields.io/crates/v/starlink.svg)](https://crates.io/crates/starlink)
+[![docs.rs](https://docs.rs/starlink/badge.svg)](https://docs.rs/starlink)
 [![license: MIT/Apache-2.0](https://img.shields.io/badge/license-MIT%2FApache--2.0-blue.svg)](https://github.com/ewilken/starlink-rs)
 
 Rust client implementation to the gRPC endpoint exposed by the SpaceX Starlink user terminal.
