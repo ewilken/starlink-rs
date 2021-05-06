@@ -12,6 +12,19 @@ message DishStowRequest {
 message DishStowResponse {
 }
 
+message DishGetContextRequest {
+}
+
+message DishGetContextResponse {
+	optional .SpaceX.API.Device.DeviceInfo device_info = 1 [json_name="deviceInfo"];
+	optional .SpaceX.API.Device.DeviceState device_state = 7 [json_name="deviceState"];
+	optional float obstruction_fraction = 2 [json_name="obstructionFraction"];
+	optional float obstruction_valid_s = 3 [json_name="obstructionValidS"];
+	optional uint32 cell_id = 4 [json_name="cellId"];
+	optional uint32 pop_rack_id = 5 [json_name="popRackId"];
+	optional float seconds_to_slot_end = 6 [json_name="secondsToSlotEnd"];
+}
+
 message DishGetHistoryResponse {
 	optional uint64 current = 1 [json_name="current"];
 	repeated float pop_ping_drop_rate = 1001 [json_name="popPingDropRate"];
@@ -41,6 +54,9 @@ message DishAlerts {
 	optional bool motors_stuck = 1 [json_name="motorsStuck"];
 	optional bool thermal_throttle = 3 [json_name="thermalThrottle"];
 	optional bool thermal_shutdown = 2 [json_name="thermalShutdown"];
+	optional bool mast_not_near_vertical = 5 [json_name="mastNotNearVertical"];
+	optional bool unexpected_location = 4 [json_name="unexpectedLocation"];
+	optional bool slow_ethernet_speeds = 6 [json_name="slowEthernetSpeeds"];
 }
 
 message DishObstructionStats {

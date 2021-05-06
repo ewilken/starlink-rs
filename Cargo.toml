@@ -1,6 +1,6 @@
 [package]
 name = "starlink"
-version = "0.1.1"
+version = "0.2.0"
 authors = ["Elias Wilken <elias@wlkn.io>"]
 edition = "2018"
 description = "Rust client implementation to the gRPC endpoint exposed by the SpaceX Starlink user terminal"
@@ -25,7 +25,8 @@ tonic = "0.4"
 prost = "0.7"
 
 [build-dependencies]
-tonic-build = "0.4"
+#tonic-build = "0.4"
+tonic-build = { git = 'https://github.com/ewilken/tonic.git' } # waiting for https://github.com/danburkert/prost/pull/455 to be released into tonic
 
 [dev-dependencies]
 async-stream = "0.3"

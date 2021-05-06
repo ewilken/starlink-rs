@@ -29,7 +29,7 @@ Working examples for request/response and streaming communication are in the [`/
 ### Request / Response
 
 ```rust
-use starlink::proto::space_x::api::device::{device_client::DeviceClient, GetStatusRequest, Request};
+use starlink::proto::space_x::api::device::{device_client::DeviceClient, request, GetStatusRequest, Request};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -39,27 +39,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         id: None,
         epoch_id: None,
         target_id: None,
-        signed_request: None,
-        get_next_id: None,
-        authenticate: None,
-        factory_reset: None,
-        get_history: None,
-        get_log: None,
-        get_ping: None,
-        get_device_info: None,
-        get_status: Some(GetStatusRequest {}),
-        reboot: None,
-        set_trusted_keys: None,
-        speed_test: None,
-        dish_stow: None,
-        wifi_get_clients: None,
-        wifi_set_config: None,
-        wifi_setup: None,
+        request: Some(request::Request::GetStatus(GetStatusRequest {})),
     });
 
     let response = client.handle(request).await?;
 
-    println!("RESPONSE={:#?}", response);
+    dbg!(response);
 
     Ok(())
 }
@@ -72,7 +57,7 @@ cargo run --example request_response
 Prints something like:
 
 ```
-RESPONSE=Response {
+Response {
     metadata: MetadataMap {
         headers: {
             "content-type": "application/grpc",
@@ -83,114 +68,107 @@ RESPONSE=Response {
     message: Response {
         id: None,
         status: None,
-        get_next_id: None,
-        factory_reset: None,
-        get_log: None,
-        get_ping: None,
-        reboot: None,
-        speed_test: None,
-        get_device_info: None,
-        set_trusted_keys: None,
-        dish_authenticate: None,
-        dish_get_history: None,
-        dish_get_status: Some(
-            DishGetStatusResponse {
-                device_info: Some(
-                    DeviceInfo {
-                        id: Some(
-                            "<my-ID>",
-                        ),
-                        hardware_version: Some(
-                            "rev1_pre_production",
-                        ),
-                        software_version: Some(
-                            "39d476b5-2101-44ec-bb7e-e526cc8f94f8.release",
-                        ),
-                        country_code: None,
-                    },
-                ),
-                device_state: Some(
-                    DeviceState {
-                        uptime_s: Some(
-                            34809,
-                        ),
-                    },
-                ),
-                state: Some(
-                    Connected,
-                ),
-                alerts: Some(
-                    DishAlerts {
-                        motors_stuck: None,
-                        thermal_throttle: None,
-                        thermal_shutdown: None,
-                    },
-                ),
-                snr: Some(
-                    9.0,
-                ),
-                seconds_to_first_nonempty_slot: None,
-                pop_ping_drop_rate: None,
-                downlink_throughput_bps: Some(
-                    31826.379,
-                ),
-                uplink_throughput_bps: Some(
-                    13597.934,
-                ),
-                pop_ping_latency_ms: Some(
-                    19.17647,
-                ),
-                obstruction_stats: Some(
-                    DishObstructionStats {
-                        currently_obstructed: None,
-                        fraction_obstructed: Some(
-                            0.00015074655,
-                        ),
-                        last_24h_obstructed_s: Some(
-                            16.0,
-                        ),
-                        valid_s: Some(
-                            26564.736,
-                        ),
-                        wedge_fraction_obstructed: [
-                            1.0,
-                            0.0,
-                            0.0,
-                            0.0,
-                            0.0,
-                            0.0,
-                            0.0,
-                            0.0,
-                            0.0,
-                            0.0,
-                            0.0,
-                            0.0,
-                        ],
-                        wedge_abs_fraction_obstructed: [
-                            0.00015074655,
-                            0.0,
-                            0.0,
-                            0.0,
-                            0.0,
-                            0.0,
-                            0.0,
-                            0.0,
-                            0.0,
-                            0.0,
-                            0.0,
-                            0.0,
-                        ],
-                    },
-                ),
-            },
+        response: Some(
+            DishGetStatus(
+                DishGetStatusResponse {
+                    device_info: Some(
+                        DeviceInfo {
+                            id: Some(
+                                "<my-ID>",
+                            ),
+                            hardware_version: Some(
+                                "rev1_pre_production",
+                            ),
+                            software_version: Some(
+                                "1f86ec34-34ea-4e7a-9758-3842e72422fb.release",
+                            ),
+                            country_code: Some(
+                                "DE",
+                            ),
+                            utc_offset_s: Some(
+                                1,
+                            ),
+                        },
+                    ),
+                    device_state: Some(
+                        DeviceState {
+                            uptime_s: Some(
+                                26115,
+                            ),
+                        },
+                    ),
+                    state: Some(
+                        Connected,
+                    ),
+                    alerts: Some(
+                        DishAlerts {
+                            motors_stuck: None,
+                            thermal_throttle: None,
+                            thermal_shutdown: None,
+                            mast_not_near_vertical: None,
+                            unexpected_location: None,
+                            slow_ethernet_speeds: None,
+                        },
+                    ),
+                    snr: Some(
+                        6.0,
+                    ),
+                    seconds_to_first_nonempty_slot: None,
+                    pop_ping_drop_rate: None,
+                    downlink_throughput_bps: Some(
+                        8584784.0,
+                    ),
+                    uplink_throughput_bps: Some(
+                        311510.97,
+                    ),
+                    pop_ping_latency_ms: Some(
+                        38.857143,
+                    ),
+                    obstruction_stats: Some(
+                        DishObstructionStats {
+                            currently_obstructed: None,
+                            fraction_obstructed: Some(
+                                0.0010516815,
+                            ),
+                            last_24h_obstructed_s: Some(
+                                72.0,
+                            ),
+                            valid_s: Some(
+                                21260.67,
+                            ),
+                            wedge_fraction_obstructed: [
+                                1.0,
+                                0.0,
+                                0.0,
+                                0.0,
+                                0.0,
+                                0.0,
+                                0.0,
+                                0.0,
+                                0.0,
+                                0.0,
+                                0.0,
+                                0.0,
+                            ],
+                            wedge_abs_fraction_obstructed: [
+                                0.0010516815,
+                                0.0,
+                                0.0,
+                                0.0,
+                                0.0,
+                                0.0,
+                                0.0,
+                                0.0,
+                                0.0,
+                                0.0,
+                                0.0,
+                                0.0,
+                            ],
+                        },
+                    ),
+                },
+            ),
         ),
-        dish_stow: None,
-        wifi_authenticate: None,
-        wifi_get_clients: None,
-        wifi_get_history: None,
-        wifi_get_status: None,
-        wifi_set_config: None,
-        wifi_setup: None,
     },
 }
 ```
@@ -202,7 +180,14 @@ use async_stream::stream;
 use std::time::Duration;
 use tokio::time::sleep;
 
-use starlink::proto::space_x::api::device::{device_client::DeviceClient, GetStatusRequest, Request, ToDevice};
+use starlink::proto::space_x::api::device::{
+    device_client::DeviceClient,
+    request,
+    to_device,
+    GetStatusRequest,
+    Request,
+    ToDevice,
+};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -211,27 +196,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let request_stream = stream! {
         loop {
             yield ToDevice {
-                request: Some(Request {
+                message: Some(to_device::Message::Request(Request {
                     id: None,
                     epoch_id: None,
                     target_id: None,
-                    signed_request: None,
-                    get_next_id: None,
-                    authenticate: None,
-                    factory_reset: None,
-                    get_history: None,
-                    get_log: None,
-                    get_ping: None,
-                    get_device_info: None,
-                    get_status: Some(GetStatusRequest {}),
-                    reboot: None,
-                    set_trusted_keys: None,
-                    speed_test: None,
-                    dish_stow: None,
-                    wifi_get_clients: None,
-                    wifi_set_config: None,
-                    wifi_setup: None,
-                }),
+                    request: Some(request::Request::GetStatus(GetStatusRequest {})),
+                })),
             };
 
             sleep(Duration::from_secs(1)).await;
@@ -243,7 +213,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut response_stream = client.stream(request).await?.into_inner();
 
     while let Some(message) = response_stream.message().await? {
-        println!("RESPONSE={:#?}", message);
+        dbg!(message);
     }
 
     Ok(())

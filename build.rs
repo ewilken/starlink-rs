@@ -11,6 +11,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 "proto/spacex/api/device/device.proto",
                 "proto/spacex/api/device/dish.proto",
                 "proto/spacex/api/device/service.proto",
+                "proto/spacex/api/device/transceiver.proto",
                 "proto/spacex/api/device/wifi_config.proto",
                 "proto/spacex/api/device/wifi.proto",
             ],

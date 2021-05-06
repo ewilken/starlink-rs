@@ -1,4 +1,4 @@
-use starlink::proto::space_x::api::device::{device_client::DeviceClient, GetStatusRequest, Request};
+use starlink::proto::space_x::api::device::{device_client::DeviceClient, request, GetStatusRequest, Request};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -8,27 +8,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         id: None,
         epoch_id: None,
         target_id: None,
-        signed_request: None,
-        get_next_id: None,
-        authenticate: None,
-        factory_reset: None,
-        get_history: None,
-        get_log: None,
-        get_ping: None,
-        get_device_info: None,
-        get_status: Some(GetStatusRequest {}),
-        reboot: None,
-        set_trusted_keys: None,
-        speed_test: None,
-        dish_stow: None,
-        wifi_get_clients: None,
-        wifi_set_config: None,
-        wifi_setup: None,
+        request: Some(request::Request::GetStatus(GetStatusRequest {})),
     });
 
     let response = client.handle(request).await?;
 
-    println!("RESPONSE={:#?}", response);
+    dbg!(response);
 
     Ok(())
 }

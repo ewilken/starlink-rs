@@ -15,5 +15,7 @@ enum Capability {
 	DEBUG = 2;
 	ADMIN = 3;
 	SETUP = 4;
+	SET_SKU = 5;
+	REFRESH = 6;
+	READ_PRIVATE = 7;
 }
-
