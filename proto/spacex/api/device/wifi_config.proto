@@ -6,6 +6,26 @@ option go_package = "spacex.com/api/device";
 
 message WifiConfig {
 	optional string network_name = 1 [json_name="networkName"];
+	optional bool apply_network_name = 1001 [json_name="applyNetworkName"];
 	optional string network_password = 2 [json_name="networkPassword"];
+	optional bool apply_network_password = 1002 [json_name="applyNetworkPassword"];
+	optional string country_code = 3 [json_name="countryCode"];
+	optional bool wifi_disabled = 4 [json_name="wifiDisabled"];
+	optional bool apply_wifi_disabled = 1003 [json_name="applyWifiDisabled"];
+	optional string lan_ipv4 = 5 [json_name="lanIpv4"];
+	optional string lan_ipv4_subnet_mask = 6 [json_name="lanIpv4SubnetMask"];
+	optional bool setup_complete = 7 [json_name="setupComplete"];
+	optional uint32 factory_reset_ticker = 8 [json_name="factoryResetTicker"];
+	optional uint32 version = 9 [json_name="version"];
+	optional .SpaceX.API.Device.WifiConfig.Security wifi_security = 10 [json_name="wifiSecurity"];
+	optional bool apply_wifi_security = 1004 [json_name="applyWifiSecurity"];
+	optional string network_name_5ghz = 11 [json_name="networkName5ghz"];
+	optional bool apply_network_name_5ghz = 1005 [json_name="applyNetworkName5ghz"];
+	enum Security {
+		UNKNOWN = 0;
+		WPA2 = 1;
+		WPA3 = 2;
+		WPA2WPA3 = 3;
+	}
 }
 

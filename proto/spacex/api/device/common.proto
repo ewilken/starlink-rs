@@ -9,6 +9,7 @@ message DeviceInfo {
 	optional string hardware_version = 2 [json_name="hardwareVersion"];
 	optional string software_version = 3 [json_name="softwareVersion"];
 	optional string country_code = 4 [json_name="countryCode"];
+	optional int32 utc_offset_s = 5 [json_name="utcOffsetS"];
 }
 
 message DeviceState {
@@ -55,3 +56,52 @@ message ChallengeResponse {
 	optional bytes certificate_chain = 2 [json_name="certificateChain"];
 }
 
+message NetworkInterface {
+	optional string name = 1 [json_name="name"];
+	optional .SpaceX.API.Device.NetworkInterface.RxStats rx_stats = 2 [json_name="rxStats"];
+	optional .SpaceX.API.Device.NetworkInterface.TxStats tx_stats = 3 [json_name="txStats"];
+	oneof interface {
+		.SpaceX.API.Device.EthernetNetworkInterface ethernet = 1000 [json_name="ethernet"];
+		.SpaceX.API.Device.WifiNetworkInterface wifi = 1001 [json_name="wifi"];
+	}
+	message RxStats {
+		optional uint64 bytes = 1 [json_name="bytes"];
+		optional uint64 packets = 2 [json_name="packets"];
+		optional uint64 frame_errors = 3 [json_name="frameErrors"];
+	}
+	message TxStats {
+		optional uint64 bytes = 1 [json_name="bytes"];
+		optional uint64 packets = 2 [json_name="packets"];
+	}
+}
+
+message EthernetNetworkInterface {
+	optional bool link_detected = 1 [json_name="linkDetected"];
+	optional uint32 speed_mbps = 2 [json_name="speedMbps"];
+	optional bool autonegotiation_on = 3 [json_name="autonegotiationOn"];
+	optional .SpaceX.API.Device.EthernetNetworkInterface.Duplex duplex = 4 [json_name="duplex"];
+	enum Duplex {
+		UNKNOWN = 0;
+		HALF = 1;
+		FULL = 2;
+	}
+}
+
+message WifiNetworkInterface {
+	optional .SpaceX.API.Device.WifiNetworkInterface.ThermalStatus thermal_status = 1 [json_name="thermalStatus"];
+	message ThermalStatus {
+		optional uint32 level = 1 [json_name="level"];
+	}
+}
+
+message LLAPosition {
+	optional double lat = 1 [json_name="lat"];
+	optional double lon = 2 [json_name="lon"];
+	optional double alt = 3 [json_name="alt"];
+}
+
+message ECEFPosition {
+	optional double x = 1 [json_name="x"];
+	optional double y = 2 [json_name="y"];
+	optional double z = 3 [json_name="z"];
+}

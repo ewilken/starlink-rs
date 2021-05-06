@@ -12,6 +12,14 @@ message WifiSetConfigRequest {
 }
 
 message WifiSetConfigResponse {
+	optional .SpaceX.API.Device.WifiConfig updated_wifi_config = 1 [json_name="updatedWifiConfig"];
+}
+
+message WifiGetConfigRequest {
+}
+
+message WifiGetConfigResponse {
+	optional .SpaceX.API.Device.WifiConfig wifi_config = 1 [json_name="wifiConfig"];
 }
 
 message WifiGetClientsRequest {
@@ -36,6 +44,29 @@ message WifiClient {
 	optional string mac_address = 2 [json_name="macAddress"];
 	optional string ip_address = 3 [json_name="ipAddress"];
 	optional float signal_strength = 4 [json_name="signalStrength"];
+	optional .SpaceX.API.Device.WifiClient.RxStats rx_stats = 5 [json_name="rxStats"];
+	optional .SpaceX.API.Device.WifiClient.TxStats tx_stats = 6 [json_name="txStats"];
+	optional uint32 associated_time_s = 7 [json_name="associatedTimeS"];
+	optional string mode_str = 8 [json_name="modeStr"];
+	optional .SpaceX.API.Device.WifiClient.Interface iface = 9 [json_name="iface"];
+	optional float snr = 10 [json_name="snr"];
+	optional int32 psmode = 11 [json_name="psmode"];
+	message RxStats {
+		optional uint64 bytes = 1 [json_name="bytes"];
+		optional uint64 count_errors = 2 [json_name="countErrors"];
+		optional int32 nss = 3 [json_name="nss"];
+	}
+	message TxStats {
+		optional uint64 bytes = 1 [json_name="bytes"];
+		optional uint64 success_bytes = 2 [json_name="successBytes"];
+		optional int32 nss = 3 [json_name="nss"];
+	}
+	enum Interface {
+		UNKNOWN = 0;
+		ETH = 1;
+		RF_2GHZ = 2;
+		RF_5GHZ = 3;
+	}
 }
 
 message WifiSetupRequest {
@@ -72,3 +103,68 @@ message WifiAccountBondingEvent {
 	optional string dish_id = 1 [json_name="dishId"];
 }
 
+message PingMetrics {
+	optional float latency_mean_ms = 1 [json_name="latencyMeanMs"];
+	optional float latency_stddev_ms = 2 [json_name="latencyStddevMs"];
+	optional float latency_mean_ms_5m = 3 [json_name="latencyMeanMs5m"];
+	optional float latency_mean_ms_1h = 4 [json_name="latencyMeanMs1h"];
+	optional float latency_mean_ms_1d = 5 [json_name="latencyMeanMs1d"];
+	optional float drop_rate = 6 [json_name="dropRate"];
+	optional float drop_rate_5m = 7 [json_name="dropRate5m"];
+	optional float drop_rate_1h = 8 [json_name="dropRate1h"];
+	optional float drop_rate_1d = 9 [json_name="dropRate1d"];
+	optional float seconds_since_last_success = 10 [json_name="secondsSinceLastSuccess"];
+	optional float seconds_since_last_1s_outage = 11 [json_name="secondsSinceLast1sOutage"];
+	optional float seconds_since_last_2s_outage = 15 [json_name="secondsSinceLast2sOutage"];
+	optional float seconds_since_last_5s_outage = 12 [json_name="secondsSinceLast5sOutage"];
+	optional float happy_hours_1s_1d = 13 [json_name="happyHours1s1d"];
+	optional float happy_hours_2s_1d = 16 [json_name="happyHours2s1d"];
+	optional float happy_hours_5s_1d = 14 [json_name="happyHours5s1d"];
+}
+
+message WifiGetPingMetricsRequest {
+}
+
+message WifiGetPingMetricsResponse {
+	optional .SpaceX.API.Device.PingMetrics internet = 1 [json_name="internet"];
+}
+
+message WifiGetDiagnosticsRequest {
+}
+
+message WifiGetDiagnosticsResponse {
+	optional .SpaceX.API.Device.WifiScanResults network_scan = 1 [json_name="networkScan"];
+	repeated .SpaceX.API.Device.WifiNetwork wifi_networks = 2 [json_name="wifiNetworks"];
+}
+
+message WifiScanResults {
+	repeated .SpaceX.API.Device.WifiScanResults.Network networks = 1 [json_name="networks"];
+	message Network {
+		optional .SpaceX.API.Device.WifiScanResults.Network.Source source = 1 [json_name="source"];
+		optional string ssid = 2 [json_name="ssid"];
+		optional string bssid = 3 [json_name="bssid"];
+		optional string frequency_ghz = 4 [json_name="frequencyGhz"];
+		optional int32 channel = 5 [json_name="channel"];
+		optional int32 signal_level_dbm = 6 [json_name="signalLevelDbm"];
+		optional int32 noise_level_dbm = 7 [json_name="noiseLevelDbm"];
+		optional bool has_encryption_key = 8 [json_name="hasEncryptionKey"];
+		optional string phy_mode_str = 9 [json_name="phyModeStr"];
+		enum Source {
+			UNKNOWN = 0;
+			SCAN_2_4GHZ = 1;
+			SCAN_5GHZ = 2;
+		}
+	}
+}
+
+message WifiNetwork {
+	optional .SpaceX.API.Device.WifiNetwork.Band band = 1 [json_name="band"];
+	optional string ssid = 2 [json_name="ssid"];
+	optional uint32 channel = 3 [json_name="channel"];
+	optional string encryption_type_str = 4 [json_name="encryptionTypeStr"];
+	enum Band {
+		WIFI_UNKNOWN = 0;
+		WIFI_2_4GHZ = 1;
+		WIFI_5GHZ = 2;
+	}
+}

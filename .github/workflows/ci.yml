@@ -11,7 +11,7 @@ env:
 
 jobs:
   style:
-    name: Check Style
+    name: Check style
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

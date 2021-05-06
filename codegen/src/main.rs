@@ -5,20 +5,21 @@ use std::{
 };
 
 use prost::Message;
+use prost_types::{DescriptorProto, FileDescriptorSet};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let file_descriptor_set_bytes = include_bytes!("../static/device.protoset");
-    let file_descriptor_set = prost_types::FileDescriptorSet::decode(&file_descriptor_set_bytes[..]).unwrap();
+    let file_descriptor_set = FileDescriptorSet::decode(&file_descriptor_set_bytes[..]).unwrap();
 
-    // dbg!(&file_descriptor_set);
+    dbg!(&file_descriptor_set);
 
     for fd in file_descriptor_set.file {
         let name = fd.name.unwrap();
 
-        let dir = format!("../proto/{}", Path::new(&name).parent().unwrap().to_str().unwrap());
+        let dir = format!("./proto/{}", Path::new(&name).parent().unwrap().to_str().unwrap());
         fs::create_dir_all(dir)?;
 
-        let mut file = File::create(format!("../proto/{}", name))?;
+        let mut file = File::create(format!("./proto/{}", name))?;
 
         file.write_all(format!("syntax = \"{}\";\n\n", fd.syntax.unwrap()).as_bytes())?;
         file.write_all(format!("package {};\n\n", fd.package.unwrap()).as_bytes())?;
@@ -37,66 +38,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
 
         for msg in fd.message_type {
-            file.write_all(format!("message {} {{\n", msg.name.unwrap()).as_bytes())?;
-            for field in msg.field {
-                file.write_all(b"\t")?;
-                if let Some(label) = field.label {
-                    file.write_all(format!("{} ", fmt_field_label(label)).as_bytes())?;
-                }
-                file.write_all(
-                    format!(
-                        "{} {} = {}",
-                        fmt_field_type(field.r#type.unwrap(), field.type_name),
-                        field.name.unwrap(),
-                        field.number.unwrap()
-                    )
-                    .as_bytes(),
-                )?;
-                if let Some(json_name) = field.json_name {
-                    file.write_all(format!(" [json_name=\"{}\"];\n", json_name).as_bytes())?;
-                } else {
-                    file.write_all(b";\n")?;
-                }
-            }
-
-            // for oneof in msg.oneof_decl {
-            //     file.write_all(format!("\toneof {} {{\n", oneof.name.unwrap()).as_bytes())?;
-            //     if let Some(options) = oneof.options {
-            //         for _option in options.uninterpreted_option {
-            //             // TODO - check back here if this ever occours
-            //             file.write_all(b"\t\ttest\n")?;
-            //             panic!("oneof option generation not covered");
-            //         }
-            //     }
-            //     file.write_all(b"\t}\n")?;
-            // }
-
-            for n_msg in msg.nested_type {
-                file.write_all(format!("\tmessage {} {{\n", n_msg.name.unwrap()).as_bytes())?;
-                for field in n_msg.field {
-                    file.write_all(b"\t\t")?;
-                    if let Some(label) = field.label {
-                        file.write_all(format!("{} ", fmt_field_label(label)).as_bytes())?;
-                    }
-                    file.write_all(
-                        format!(
-                            "{} {} = {}",
-                            fmt_field_type(field.r#type.unwrap(), field.type_name),
-                            field.name.unwrap(),
-                            field.number.unwrap()
-                        )
-                        .as_bytes(),
-                    )?;
-                    if let Some(json_name) = field.json_name {
-                        file.write_all(format!(" [json_name=\"{}\"];\n", json_name).as_bytes())?;
-                    } else {
-                        file.write_all(b";\n")?;
-                    }
-                }
-                file.write_all(b"\t}\n")?;
-            }
-
-            file.write_all(b"}\n\n")?;
+            render_descriptor_proto(&mut file, &msg)?;
         }
 
         for e in fd.enum_type {
@@ -109,6 +51,79 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
         file.flush()?;
     }
+
+    Ok(())
+}
+
+fn render_descriptor_proto(file: &mut File, msg: &DescriptorProto) -> Result<(), Box<dyn std::error::Error>> {
+    file.write_all(format!("message {} {{\n", msg.name.clone().unwrap()).as_bytes())?;
+    for field in &msg.field {
+        if field.oneof_index.is_none() {
+            file.write_all(b"\t")?;
+            if let Some(label) = field.label {
+                file.write_all(format!("{} ", fmt_field_label(label)).as_bytes())?;
+            }
+            file.write_all(
+                format!(
+                    "{} {} = {}",
+                    fmt_field_type(field.r#type.unwrap(), field.type_name.clone()),
+                    field.name.clone().unwrap(),
+                    field.number.unwrap()
+                )
+                .as_bytes(),
+            )?;
+            if let Some(json_name) = &field.json_name {
+                file.write_all(format!(" [json_name=\"{}\"];\n", json_name).as_bytes())?;
+            } else {
+                file.write_all(b";\n")?;
+            }
+        }
+    }
+
+    for oneof in &msg.oneof_decl {
+        file.write_all(format!("\toneof {} {{\n", oneof.name.clone().unwrap()).as_bytes())?;
+
+        for field in &msg.field {
+            if field.oneof_index.is_some() {
+                file.write_all(
+                    format!(
+                        "\t\t{} {} = {}",
+                        fmt_field_type(field.r#type.unwrap(), field.type_name.clone()),
+                        field.name.clone().unwrap(),
+                        field.number.unwrap()
+                    )
+                    .as_bytes(),
+                )?;
+                if let Some(json_name) = &field.json_name {
+                    file.write_all(format!(" [json_name=\"{}\"];\n", json_name).as_bytes())?;
+                } else {
+                    file.write_all(b";\n")?;
+                }
+            }
+        }
+
+        if let Some(options) = &oneof.options {
+            for _option in &options.uninterpreted_option {
+                unimplemented!(); // TODO - check back here if this ever occours
+            }
+        }
+
+        file.write_all(b"\t}\n")?;
+    }
+
+    for n_msg in &msg.nested_type {
+        render_descriptor_proto(file, n_msg)?;
+    }
+
+    for n_e in &msg.enum_type {
+        file.write_all(format!("\tenum {} {{\n", n_e.name.clone().unwrap()).as_bytes())?;
+        for value in n_e.value.clone() {
+            file.write_all(format!("\t\t{} = {};\n", value.name.unwrap(), value.number.unwrap()).as_bytes())?;
+        }
+        file.write_all(b"\t}\n")?;
+    }
+
+    file.write_all(b"}\n\n")?;
 
     Ok(())
 }

@@ -2,7 +2,14 @@ use async_stream::stream;
 use std::time::Duration;
 use tokio::time::sleep;
 
-use starlink::proto::space_x::api::device::{device_client::DeviceClient, GetStatusRequest, Request, ToDevice};
+use starlink::proto::space_x::api::device::{
+    device_client::DeviceClient,
+    request,
+    to_device,
+    GetStatusRequest,
+    Request,
+    ToDevice,
+};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -11,27 +18,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let request_stream = stream! {
         loop {
             yield ToDevice {
-                request: Some(Request {
+                message: Some(to_device::Message::Request(Request {
                     id: None,
                     epoch_id: None,
                     target_id: None,
-                    signed_request: None,
-                    get_next_id: None,
-                    authenticate: None,
-                    factory_reset: None,
-                    get_history: None,
-                    get_log: None,
-                    get_ping: None,
-                    get_device_info: None,
-                    get_status: Some(GetStatusRequest {}),
-                    reboot: None,
-                    set_trusted_keys: None,
-                    speed_test: None,
-                    dish_stow: None,
-                    wifi_get_clients: None,
-                    wifi_set_config: None,
-                    wifi_setup: None,
-                }),
+                    request: Some(request::Request::GetStatus(GetStatusRequest {})),
+                })),
             };
 
             sleep(Duration::from_secs(1)).await;
@@ -43,7 +35,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut response_stream = client.stream(request).await?.into_inner();
 
     while let Some(message) = response_stream.message().await? {
-        println!("RESPONSE={:#?}", message);
+        dbg!(message);
     }
 
     Ok(())
