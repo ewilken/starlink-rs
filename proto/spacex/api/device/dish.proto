@@ -78,4 +78,3 @@ enum DishState {
 	SEARCHING = 2;
 	BOOTING = 3;
 }
-

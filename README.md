@@ -24,7 +24,7 @@ service Device {
 
 ## Example Usage
 
-Working examples for request/response and streaming communication are in the [`/examples`](https://github.com/ewilken/starlink-rs/tree/main/examples) directory.
+Working examples for request/response and streaming communication are in the [examples](examples) directory.
 
 ### Request / Response
 
