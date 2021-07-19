@@ -7,6 +7,7 @@ option go_package = "spacex.com/api/device";
 import "spacex/api/device/common.proto";
 
 message DishStowRequest {
+	optional bool unstow = 1 [json_name="unstow"];
 }
 
 message DishStowResponse {
@@ -22,6 +23,9 @@ message DishGetContextResponse {
 	optional float obstruction_valid_s = 3 [json_name="obstructionValidS"];
 	optional uint32 cell_id = 4 [json_name="cellId"];
 	optional uint32 pop_rack_id = 5 [json_name="popRackId"];
+	optional uint32 initial_satellite_id = 8 [json_name="initialSatelliteId"];
+	optional uint32 initial_gateway_id = 9 [json_name="initialGatewayId"];
+	optional bool on_backup_beam = 10 [json_name="onBackupBeam"];
 	optional float seconds_to_slot_end = 6 [json_name="secondsToSlotEnd"];
 }
 
@@ -48,6 +52,16 @@ message DishGetStatusResponse {
 	optional float uplink_throughput_bps = 1008 [json_name="uplinkThroughputBps"];
 	optional float pop_ping_latency_ms = 1009 [json_name="popPingLatencyMs"];
 	optional .SpaceX.API.Device.DishObstructionStats obstruction_stats = 1004 [json_name="obstructionStats"];
+	optional bool stow_requested = 1010 [json_name="stowRequested"];
+}
+
+message DishGetObstructionMapRequest {
+}
+
+message DishGetObstructionMapResponse {
+	optional uint32 num_rows = 1 [json_name="numRows"];
+	optional uint32 num_cols = 2 [json_name="numCols"];
+	repeated float snr = 3 [json_name="snr"];
 }
 
 message DishAlerts {

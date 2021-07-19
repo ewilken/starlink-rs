@@ -117,6 +117,9 @@ message PingMetrics {
 	optional float seconds_since_last_1s_outage = 11 [json_name="secondsSinceLast1sOutage"];
 	optional float seconds_since_last_2s_outage = 15 [json_name="secondsSinceLast2sOutage"];
 	optional float seconds_since_last_5s_outage = 12 [json_name="secondsSinceLast5sOutage"];
+	optional float seconds_since_last_15s_outage = 18 [json_name="secondsSinceLast15sOutage"];
+	optional float seconds_since_last_60s_outage = 19 [json_name="secondsSinceLast60sOutage"];
+	optional float seconds_since_last_300s_outage = 20 [json_name="secondsSinceLast300sOutage"];
 	optional float happy_hours_1s_1d = 13 [json_name="happyHours1s1d"];
 	optional float happy_hours_2s_1d = 16 [json_name="happyHours2s1d"];
 	optional float happy_hours_5s_1d = 14 [json_name="happyHours5s1d"];

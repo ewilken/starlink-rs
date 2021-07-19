@@ -1,6 +1,6 @@
 [package]
 name = "starlink"
-version = "0.2.0"
+version = "0.3.0"
 authors = ["Elias Wilken <elias@wlkn.io>"]
 edition = "2018"
 description = "Rust client implementation to the gRPC endpoint exposed by the SpaceX Starlink user terminal"

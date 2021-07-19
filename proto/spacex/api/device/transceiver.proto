@@ -39,6 +39,42 @@ message TransceiverFaults {
 	optional bool dc_voltage_fault = 3 [json_name="dcVoltageFault"];
 }
 
+message TransceiverGetTelemetryRequest {
+}
+
+message TransceiverGetTelemetryResponse {
+	optional uint32 antenna_pointing_mode = 1001 [json_name="antennaPointingMode"];
+	optional float antenna_pitch = 1002 [json_name="antennaPitch"];
+	optional float antenna_roll = 1003 [json_name="antennaRoll"];
+	optional float antenna_rx_theta = 1004 [json_name="antennaRxTheta"];
+	optional float antenna_true_heading = 1005 [json_name="antennaTrueHeading"];
+	optional uint32 rx_channel = 1006 [json_name="rxChannel"];
+	optional uint32 current_cell_id = 1007 [json_name="currentCellId"];
+	optional float seconds_until_slot_end = 1008 [json_name="secondsUntilSlotEnd"];
+	optional float wb_rssi_peak_mag_db = 1009 [json_name="wbRssiPeakMagDb"];
+	optional float pop_ping_drop_rate = 1010 [json_name="popPingDropRate"];
+	optional float snr_db = 1011 [json_name="snrDb"];
+	optional float l1_snr_avg_db = 1012 [json_name="l1SnrAvgDb"];
+	optional float l1_snr_min_db = 1013 [json_name="l1SnrMinDb"];
+	optional float l1_snr_max_db = 1014 [json_name="l1SnrMaxDb"];
+	optional uint32 lmac_satellite_id = 1015 [json_name="lmacSatelliteId"];
+	optional uint32 target_satellite_id = 1016 [json_name="targetSatelliteId"];
+	optional uint32 grant_mcs = 1017 [json_name="grantMcs"];
+	optional float grant_symbols_avg = 1018 [json_name="grantSymbolsAvg"];
+	optional uint32 ded_grant = 1019 [json_name="dedGrant"];
+	optional uint32 mobility_proactive_slot_change = 1020 [json_name="mobilityProactiveSlotChange"];
+	optional uint32 mobility_reactive_slot_change = 1021 [json_name="mobilityReactiveSlotChange"];
+	optional uint32 rfp_total_syn_failed = 1022 [json_name="rfpTotalSynFailed"];
+	optional uint32 num_out_of_seq = 1023 [json_name="numOutOfSeq"];
+	optional uint32 num_ulmap_drop = 1024 [json_name="numUlmapDrop"];
+	optional float current_seconds_of_schedule = 1025 [json_name="currentSecondsOfSchedule"];
+	optional uint32 send_label_switch_to_ground_failed_calls = 1026 [json_name="sendLabelSwitchToGroundFailedCalls"];
+	optional double ema_velocity_x = 1027 [json_name="emaVelocityX"];
+	optional double ema_velocity_y = 1028 [json_name="emaVelocityY"];
+	optional double ema_velocity_z = 1029 [json_name="emaVelocityZ"];
+	optional float ce_rssi_db = 1030 [json_name="ceRssiDb"];
+}
+
 enum TransceiverModulatorState {
 	MODSTATE_UNKNOWN = 0;
 	MODSTATE_ENABLED = 1;

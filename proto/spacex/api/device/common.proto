@@ -91,6 +91,7 @@ message WifiNetworkInterface {
 	optional .SpaceX.API.Device.WifiNetworkInterface.ThermalStatus thermal_status = 1 [json_name="thermalStatus"];
 	message ThermalStatus {
 		optional uint32 level = 1 [json_name="level"];
+		optional uint32 temp = 2 [json_name="temp"];
 	}
 }
 

@@ -48,11 +48,15 @@ message Request {
 		.SpaceX.API.Device.UpdateRequest update = 1014 [json_name="update"];
 		.SpaceX.API.Device.GetLocationRequest get_location = 1017 [json_name="getLocation"];
 		.SpaceX.API.Device.GetHeapDumpRequest get_heap_dump = 1019 [json_name="getHeapDump"];
+		.SpaceX.API.Device.RestartControlRequest restart_control = 1020 [json_name="restartControl"];
+		.SpaceX.API.Device.FuseRequest fuse = 1021 [json_name="fuse"];
 		.SpaceX.API.Device.DishStowRequest dish_stow = 2002 [json_name="dishStow"];
 		.SpaceX.API.Device.DishGetContextRequest dish_get_context = 2003 [json_name="dishGetContext"];
+		.SpaceX.API.Device.DishGetObstructionMapRequest dish_get_obstruction_map = 2008 [json_name="dishGetObstructionMap"];
 		.SpaceX.API.Device.DishEmcRequest dish_emc = 2007 [json_name="dishEmc"];
 		.SpaceX.API.Device.TransceiverIFLoopbackTestRequest transceiver_if_loopback_test = 4001 [json_name="transceiverIfLoopbackTest"];
 		.SpaceX.API.Device.TransceiverGetStatusRequest transceiver_get_status = 4003 [json_name="transceiverGetStatus"];
+		.SpaceX.API.Device.TransceiverGetTelemetryRequest transceiver_get_telemetry = 4004 [json_name="transceiverGetTelemetry"];
 		.SpaceX.API.Device.WifiGetClientsRequest wifi_get_clients = 3002 [json_name="wifiGetClients"];
 		.SpaceX.API.Device.WifiGetDiagnosticsRequest wifi_get_diagnostics = 3008 [json_name="wifiGetDiagnostics"];
 		.SpaceX.API.Device.WifiGetPingMetricsRequest wifi_get_ping_metrics = 3007 [json_name="wifiGetPingMetrics"];
@@ -65,6 +69,7 @@ message Request {
 message Response {
 	optional uint64 id = 1 [json_name="id"];
 	optional .SpaceX.API.Status.Status status = 2 [json_name="status"];
+	optional uint64 api_version = 3 [json_name="apiVersion"];
 	oneof response {
 		.SpaceX.API.Device.GetNextIdResponse get_next_id = 1006 [json_name="getNextId"];
 		.SpaceX.API.Device.EnableFlowResponse enable_flow = 1018 [json_name="enableFlow"];
@@ -81,14 +86,18 @@ message Response {
 		.SpaceX.API.Device.UpdateResponse update = 1014 [json_name="update"];
 		.SpaceX.API.Device.GetLocationResponse get_location = 1017 [json_name="getLocation"];
 		.SpaceX.API.Device.GetHeapDumpResponse get_heap_dump = 1019 [json_name="getHeapDump"];
+		.SpaceX.API.Device.RestartControlResponse restart_control = 1020 [json_name="restartControl"];
+		.SpaceX.API.Device.FuseResponse fuse = 1021 [json_name="fuse"];
 		.SpaceX.API.Device.DishAuthenticateResponse dish_authenticate = 2005 [json_name="dishAuthenticate"];
 		.SpaceX.API.Device.DishGetContextResponse dish_get_context = 2003 [json_name="dishGetContext"];
 		.SpaceX.API.Device.DishGetHistoryResponse dish_get_history = 2006 [json_name="dishGetHistory"];
 		.SpaceX.API.Device.DishGetStatusResponse dish_get_status = 2004 [json_name="dishGetStatus"];
+		.SpaceX.API.Device.DishGetObstructionMapResponse dish_get_obstruction_map = 2008 [json_name="dishGetObstructionMap"];
 		.SpaceX.API.Device.DishStowResponse dish_stow = 2002 [json_name="dishStow"];
 		.SpaceX.API.Device.DishEmcResponse dish_emc = 2007 [json_name="dishEmc"];
 		.SpaceX.API.Device.TransceiverIFLoopbackTestResponse transceiver_if_loopback_test = 4001 [json_name="transceiverIfLoopbackTest"];
 		.SpaceX.API.Device.TransceiverGetStatusResponse transceiver_get_status = 4003 [json_name="transceiverGetStatus"];
+		.SpaceX.API.Device.TransceiverGetTelemetryResponse transceiver_get_telemetry = 4004 [json_name="transceiverGetTelemetry"];
 		.SpaceX.API.Device.WifiAuthenticateResponse wifi_authenticate = 3005 [json_name="wifiAuthenticate"];
 		.SpaceX.API.Device.WifiGetClientsResponse wifi_get_clients = 3002 [json_name="wifiGetClients"];
 		.SpaceX.API.Device.WifiGetDiagnosticsResponse wifi_get_diagnostics = 3008 [json_name="wifiGetDiagnostics"];
@@ -120,6 +129,12 @@ message FactoryResetRequest {
 }
 
 message FactoryResetResponse {
+}
+
+message FuseRequest {
+}
+
+message FuseResponse {
 }
 
 message GetHistoryRequest {
@@ -208,6 +223,12 @@ message UpdateRequest {
 }
 
 message UpdateResponse {
+}
+
+message RestartControlRequest {
+}
+
+message RestartControlResponse {
 }
 
 message GetNetworkInterfacesRequest {

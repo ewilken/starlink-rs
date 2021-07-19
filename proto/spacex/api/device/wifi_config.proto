@@ -15,12 +15,22 @@ message WifiConfig {
 	optional string lan_ipv4 = 5 [json_name="lanIpv4"];
 	optional string lan_ipv4_subnet_mask = 6 [json_name="lanIpv4SubnetMask"];
 	optional bool setup_complete = 7 [json_name="setupComplete"];
+	optional bool apply_setup_complete = 1010 [json_name="applySetupComplete"];
 	optional uint32 factory_reset_ticker = 8 [json_name="factoryResetTicker"];
 	optional uint32 version = 9 [json_name="version"];
 	optional .SpaceX.API.Device.WifiConfig.Security wifi_security = 10 [json_name="wifiSecurity"];
 	optional bool apply_wifi_security = 1004 [json_name="applyWifiSecurity"];
 	optional string network_name_5ghz = 11 [json_name="networkName5ghz"];
 	optional bool apply_network_name_5ghz = 1005 [json_name="applyNetworkName5ghz"];
+	optional string mac_wan = 12 [json_name="macWan"];
+	optional bool apply_mac_wan = 1006 [json_name="applyMacWan"];
+	optional string mac_lan = 13 [json_name="macLan"];
+	optional bool apply_mac_lan = 1007 [json_name="applyMacLan"];
+	optional string mac_lan_2ghz = 14 [json_name="macLan2ghz"];
+	optional bool apply_mac_lan_2ghz = 1008 [json_name="applyMacLan2ghz"];
+	optional string mac_lan_5ghz = 15 [json_name="macLan5ghz"];
+	optional bool apply_mac_lan_5ghz = 1009 [json_name="applyMacLan5ghz"];
+	optional string device_id = 16 [json_name="deviceId"];
 	enum Security {
 		UNKNOWN = 0;
 		WPA2 = 1;
@@ -28,4 +38,3 @@ message WifiConfig {
 		WPA2WPA3 = 3;
 	}
 }
-

@@ -4,9 +4,11 @@ use starlink::proto::space_x::api::device::{
     AuthenticateRequest,
     DishEmcRequest,
     DishGetContextRequest,
+    DishGetObstructionMapRequest,
     DishStowRequest,
     EnableFlowRequest,
     FactoryResetRequest,
+    FuseRequest,
     GetDeviceInfoRequest,
     GetHeapDumpRequest,
     GetHistoryRequest,
@@ -19,11 +21,13 @@ use starlink::proto::space_x::api::device::{
     PingHostRequest,
     RebootRequest,
     Request,
+    RestartControlRequest,
     SetSkuRequest,
     SetTrustedKeysRequest,
     SignedData,
     SpeedTestRequest,
     TransceiverGetStatusRequest,
+    TransceiverGetTelemetryRequest,
     TransceiverIfLoopbackTestRequest,
     UpdateRequest,
     WifiGetClientsRequest,
@@ -36,10 +40,12 @@ use starlink::proto::space_x::api::device::{
 
 // AuthenticateRequest              -
 // DishEmcRequest                   -
-// DishGetContextRequest            - working
+// DishGetContextRequest            - previously working, now permission denied
+// DishGetObstructionMapRequest     - working
 // DishStowRequest                  -
 // EnableFlowRequest                -
 // FactoryResetRequest              -
+// FuseRequest                      - unimplemented
 // GetDeviceInfoRequest             - working
 // GetHeapDumpRequest               - unimplemented
 // GetHistoryRequest                - working
@@ -51,12 +57,13 @@ use starlink::proto::space_x::api::device::{
 // GetStatusRequest                 - working
 // PingHostRequest                  - unimplemented
 // RebootRequest                    - working
-// Request                          -
+// RestartControlRequest            - unimplemented
 // SetSkuRequest                    -
 // SetTrustedKeysRequest            -
 // SignedData                       -
 // SpeedTestRequest                 - unimplemented
 // TransceiverGetStatusRequest      - unimplemented
+// TransceiverGetTelemetryRequest   - unimplemented
 // TransceiverIfLoopbackTestRequest -
 // UpdateRequest                    - unimplemented
 // WifiGetClientsRequest            - unimplemented
@@ -74,11 +81,18 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     //     id: None,
     //     epoch_id: None,
     //     target_id: None,
+    //     request: Some(request::Request::DishGetObstructionMap(DishGetObstructionMapRequest {})),
+    // });
+    // let response = client.handle(request).await?;
+    // dbg!(response);
+
+    // let request = tonic::Request::new(Request {
+    //     id: None,
+    //     epoch_id: None,
+    //     target_id: None,
     //     request: Some(request::Request::GetDeviceInfo(GetDeviceInfoRequest {})),
     // });
-
     // let response = client.handle(request).await?;
-
     // dbg!(response);
 
     // GetDeviceInfoResponse {
@@ -103,71 +117,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     //     ),
     // }
 
-    // let request = tonic::Request::new(Request {
-    //     id: None,
-    //     epoch_id: None,
-    //     target_id: None,
-    //     request: Some(request::Request::DishGetContext(DishGetContextRequest {})),
-    // });
-
-    // let response = client.handle(request).await?;
-
-    // dbg!(response);
-
-    // DishGetContextResponse {
-    //     device_info: Some(
-    //         DeviceInfo {
-    //             id: Some(
-    //                 "<my-ID>",
-    //             ),
-    //             hardware_version: Some(
-    //                 "rev1_pre_production",
-    //             ),
-    //             software_version: Some(
-    //                 "1f86ec34-34ea-4e7a-9758-3842e72422fb.release",
-    //             ),
-    //             country_code: Some(
-    //                 "DE",
-    //             ),
-    //             utc_offset_s: Some(
-    //                 1,
-    //             ),
-    //         },
-    //     ),
-    //     device_state: Some(
-    //         DeviceState {
-    //             uptime_s: Some(
-    //                 25298,
-    //             ),
-    //         },
-    //     ),
-    //     obstruction_fraction: Some(
-    //         0.001093006,
-    //     ),
-    //     obstruction_valid_s: Some(
-    //         20723.25,
-    //     ),
-    //     cell_id: Some(
-    //         314900,
-    //     ),
-    //     pop_rack_id: Some(
-    //         18,
-    //     ),
-    //     seconds_to_slot_end: Some(
-    //         12.513584,
-    //     ),
-    // }
-
-    // let request = tonic::Request::new(Request {
-    //     id: None,
-    //     epoch_id: None,
-    //     target_id: None,
-    //     request: Some(request::Request::GetStatus(GetStatusRequest {})),
-    // });
-
-    // let response = client.handle(request).await?;
-
-    // dbg!(response);
+    let request = tonic::Request::new(Request {
+        id: None,
+        epoch_id: None,
+        target_id: None,
+        request: Some(request::Request::GetStatus(GetStatusRequest {})),
+    });
+    let response = client.handle(request).await?;
+    dbg!(response);
 
     // DishGetStatusResponse {
     //     device_info: Some(
@@ -179,7 +136,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     //                 "rev1_pre_production",
     //             ),
     //             software_version: Some(
-    //                 "1f86ec34-34ea-4e7a-9758-3842e72422fb.release",
+    //                 "2bc83694-2dec-48c8-9061-88b86cdd5d89.uterm.release",
     //             ),
     //             country_code: Some(
     //                 "DE",
@@ -192,7 +149,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     //     device_state: Some(
     //         DeviceState {
     //             uptime_s: Some(
-    //                 26115,
+    //                 765906,
     //             ),
     //         },
     //     ),
@@ -210,30 +167,30 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     //         },
     //     ),
     //     snr: Some(
-    //         6.0,
+    //         9.0,
     //     ),
     //     seconds_to_first_nonempty_slot: None,
     //     pop_ping_drop_rate: None,
     //     downlink_throughput_bps: Some(
-    //         8584784.0,
+    //         176773.14,
     //     ),
     //     uplink_throughput_bps: Some(
-    //         311510.97,
+    //         102408.125,
     //     ),
     //     pop_ping_latency_ms: Some(
-    //         38.857143,
+    //         37.52381,
     //     ),
     //     obstruction_stats: Some(
     //         DishObstructionStats {
     //             currently_obstructed: None,
     //             fraction_obstructed: Some(
-    //                 0.0010516815,
+    //                 0.00081779656,
     //             ),
     //             last_24h_obstructed_s: Some(
-    //                 72.0,
+    //                 15.0,
     //             ),
     //             valid_s: Some(
-    //                 21260.67,
+    //                 765202.0,
     //             ),
     //             wedge_fraction_obstructed: [
     //                 1.0,
@@ -244,13 +201,13 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     //                 0.0,
     //                 0.0,
     //                 0.0,
-    //                 0.0,
+    //                 0.006051556,
     //                 0.0,
     //                 0.0,
     //                 0.0,
     //             ],
     //             wedge_abs_fraction_obstructed: [
-    //                 0.0010516815,
+    //                 0.000026709631,
     //                 0.0,
     //                 0.0,
     //                 0.0,
@@ -258,14 +215,15 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     //                 0.0,
     //                 0.0,
     //                 0.0,
-    //                 0.0,
+    //                 0.00033165555,
     //                 0.0,
     //                 0.0,
     //                 0.0,
     //             ],
     //         },
     //     ),
-    // }
+    //     stow_requested: None,
+    // },
 
     Ok(())
 }
