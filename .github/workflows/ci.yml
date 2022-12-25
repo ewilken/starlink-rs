@@ -30,17 +30,32 @@ jobs:
           args: --all -- --check
 
   test:
-    name: Test
-    runs-on: ubuntu-latest
+    name: Test ${{ matrix.rust }} on ${{ matrix.os }}
+    strategy:
+      matrix:
+        rust:
+          - stable
+          - beta
+          - nightly
+        os:
+          - ubuntu-latest
+          - macOS-latest
+    runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
         uses: actions/checkout@v1
-      - name: Install Rust
+      - name: Install Rust (${{ matrix.rust }})
         uses: actions-rs/toolchain@v1
         with:
           profile: minimal
-          toolchain: stable
+          toolchain: ${{ matrix.rust }}
           override: true
+      - name: Install protoc
+        if: matrix.os == 'ubuntu-latest'
+        run: sudo apt update && sudo apt install -y protobuf-compiler libprotobuf-dev
+      - name: Install protoc
+        if: matrix.os == 'macOS-latest'
+        run: brew install protobuf
       - name: cargo test
         uses: actions-rs/cargo@v1
         with:
@@ -48,7 +63,6 @@ jobs:
 
   doc:
     name: Build docs
-    needs: [style, test]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -59,6 +73,8 @@ jobs:
           profile: minimal
           toolchain: stable
           override: true
+      - name: Install protoc
+        run: sudo apt update && sudo apt install -y protobuf-compiler libprotobuf-dev
       - name: cargo rustdoc -- -D rustdoc::broken_intra_doc_links
         uses: actions-rs/cargo@v1
         with:
