@@ -1,6 +1,6 @@
 [package]
 name = "starlink"
-version = "0.3.0"
+version = "0.3.1"
 authors = ["Elias Wilken <elias@wlkn.io>"]
 edition = "2018"
 description = "Rust client implementation to the gRPC endpoint exposed by the SpaceX Starlink user terminal"
@@ -21,11 +21,11 @@ exclude = [
 ]
 
 [dependencies]
-tonic = "0.5"
-prost = "0.8"
+tonic = "0.8"
+prost = "0.11"
 
 [build-dependencies]
-tonic-build = "0.5"
+tonic-build = "0.8"
 
 [dev-dependencies]
 async-stream = "0.3"

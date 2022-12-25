@@ -42,7 +42,7 @@ use starlink::proto::space_x::api::device::{
 // DishEmcRequest                   -
 // DishGetContextRequest            - previously working, now permission denied
 // DishGetObstructionMapRequest     - working
-// DishStowRequest                  -
+// DishStowRequest                  - working (using it can take the dish a few minutes to reconnect)
 // EnableFlowRequest                -
 // FactoryResetRequest              -
 // FuseRequest                      - unimplemented
@@ -64,7 +64,7 @@ use starlink::proto::space_x::api::device::{
 // SpeedTestRequest                 - unimplemented
 // TransceiverGetStatusRequest      - unimplemented
 // TransceiverGetTelemetryRequest   - unimplemented
-// TransceiverIfLoopbackTestRequest -
+// TransceiverIfLoopbackTestRequest - unimplemented
 // UpdateRequest                    - unimplemented
 // WifiGetClientsRequest            - unimplemented
 // WifiGetConfigRequest             - unimplemented
