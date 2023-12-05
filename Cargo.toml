@@ -1,8 +1,8 @@
 [package]
 name = "starlink"
-version = "0.3.1"
+version = "1.0.0"
 authors = ["Elias Wilken <elias@wlkn.io>"]
-edition = "2018"
+edition = "2021"
 description = "Rust client implementation to the gRPC endpoint exposed by the SpaceX Starlink user terminal"
 documentation = "https://docs.rs/starlink"
 readme = "README.md"
@@ -21,15 +21,15 @@ exclude = [
 ]
 
 [dependencies]
-tonic = "0.8"
-prost = "0.11"
+tonic = "0.10.2"
+prost = "0.12.3"
 
 [build-dependencies]
-tonic-build = "0.8"
+tonic-build = "0.10.2"
 
 [dev-dependencies]
-async-stream = "0.3"
-tokio = { version = "1.5", features = ["rt-multi-thread"] }
+async-stream = "0.3.5"
+tokio = { version = "1.34.0", features = ["rt-multi-thread", "macros"] }
 
 [workspace]
 members = ["codegen"]
