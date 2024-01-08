@@ -153,10 +153,11 @@ message GetPingRequest {
 
 message GetPingResponse {
 	repeated .SpaceX.API.Device.GetPingResponse.ResultsEntry results = 1 [json_name="results"];
-	message ResultsEntry {
-		optional string key = 1 [json_name="key"];
-		optional .SpaceX.API.Device.PingResult value = 2 [json_name="value"];
-	}
+message ResultsEntry {
+	optional string key = 1 [json_name="key"];
+	optional .SpaceX.API.Device.PingResult value = 2 [json_name="value"];
+}
+
 }
 
 message PingHostRequest {
