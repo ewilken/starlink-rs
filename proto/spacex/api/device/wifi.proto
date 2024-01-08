@@ -51,16 +51,18 @@ message WifiClient {
 	optional .SpaceX.API.Device.WifiClient.Interface iface = 9 [json_name="iface"];
 	optional float snr = 10 [json_name="snr"];
 	optional int32 psmode = 11 [json_name="psmode"];
-	message RxStats {
-		optional uint64 bytes = 1 [json_name="bytes"];
-		optional uint64 count_errors = 2 [json_name="countErrors"];
-		optional int32 nss = 3 [json_name="nss"];
-	}
-	message TxStats {
-		optional uint64 bytes = 1 [json_name="bytes"];
-		optional uint64 success_bytes = 2 [json_name="successBytes"];
-		optional int32 nss = 3 [json_name="nss"];
-	}
+message RxStats {
+	optional uint64 bytes = 1 [json_name="bytes"];
+	optional uint64 count_errors = 2 [json_name="countErrors"];
+	optional int32 nss = 3 [json_name="nss"];
+}
+
+message TxStats {
+	optional uint64 bytes = 1 [json_name="bytes"];
+	optional uint64 success_bytes = 2 [json_name="successBytes"];
+	optional int32 nss = 3 [json_name="nss"];
+}
+
 	enum Interface {
 		UNKNOWN = 0;
 		ETH = 1;
@@ -142,22 +144,23 @@ message WifiGetDiagnosticsResponse {
 
 message WifiScanResults {
 	repeated .SpaceX.API.Device.WifiScanResults.Network networks = 1 [json_name="networks"];
-	message Network {
-		optional .SpaceX.API.Device.WifiScanResults.Network.Source source = 1 [json_name="source"];
-		optional string ssid = 2 [json_name="ssid"];
-		optional string bssid = 3 [json_name="bssid"];
-		optional string frequency_ghz = 4 [json_name="frequencyGhz"];
-		optional int32 channel = 5 [json_name="channel"];
-		optional int32 signal_level_dbm = 6 [json_name="signalLevelDbm"];
-		optional int32 noise_level_dbm = 7 [json_name="noiseLevelDbm"];
-		optional bool has_encryption_key = 8 [json_name="hasEncryptionKey"];
-		optional string phy_mode_str = 9 [json_name="phyModeStr"];
-		enum Source {
-			UNKNOWN = 0;
-			SCAN_2_4GHZ = 1;
-			SCAN_5GHZ = 2;
-		}
+message Network {
+	optional .SpaceX.API.Device.WifiScanResults.Network.Source source = 1 [json_name="source"];
+	optional string ssid = 2 [json_name="ssid"];
+	optional string bssid = 3 [json_name="bssid"];
+	optional string frequency_ghz = 4 [json_name="frequencyGhz"];
+	optional int32 channel = 5 [json_name="channel"];
+	optional int32 signal_level_dbm = 6 [json_name="signalLevelDbm"];
+	optional int32 noise_level_dbm = 7 [json_name="noiseLevelDbm"];
+	optional bool has_encryption_key = 8 [json_name="hasEncryptionKey"];
+	optional string phy_mode_str = 9 [json_name="phyModeStr"];
+	enum Source {
+		UNKNOWN = 0;
+		SCAN_2_4GHZ = 1;
+		SCAN_5GHZ = 2;
 	}
+}
+
 }
 
 message WifiNetwork {

@@ -64,15 +64,17 @@ message NetworkInterface {
 		.SpaceX.API.Device.EthernetNetworkInterface ethernet = 1000 [json_name="ethernet"];
 		.SpaceX.API.Device.WifiNetworkInterface wifi = 1001 [json_name="wifi"];
 	}
-	message RxStats {
-		optional uint64 bytes = 1 [json_name="bytes"];
-		optional uint64 packets = 2 [json_name="packets"];
-		optional uint64 frame_errors = 3 [json_name="frameErrors"];
-	}
-	message TxStats {
-		optional uint64 bytes = 1 [json_name="bytes"];
-		optional uint64 packets = 2 [json_name="packets"];
-	}
+message RxStats {
+	optional uint64 bytes = 1 [json_name="bytes"];
+	optional uint64 packets = 2 [json_name="packets"];
+	optional uint64 frame_errors = 3 [json_name="frameErrors"];
+}
+
+message TxStats {
+	optional uint64 bytes = 1 [json_name="bytes"];
+	optional uint64 packets = 2 [json_name="packets"];
+}
+
 }
 
 message EthernetNetworkInterface {
@@ -89,10 +91,11 @@ message EthernetNetworkInterface {
 
 message WifiNetworkInterface {
 	optional .SpaceX.API.Device.WifiNetworkInterface.ThermalStatus thermal_status = 1 [json_name="thermalStatus"];
-	message ThermalStatus {
-		optional uint32 level = 1 [json_name="level"];
-		optional uint32 temp = 2 [json_name="temp"];
-	}
+message ThermalStatus {
+	optional uint32 level = 1 [json_name="level"];
+	optional uint32 temp = 2 [json_name="temp"];
+}
+
 }
 
 message LLAPosition {
