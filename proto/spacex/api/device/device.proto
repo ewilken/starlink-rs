@@ -10,10 +10,13 @@ import "spacex/api/device/common.proto";
 import "spacex/api/device/dish.proto";
 import "spacex/api/device/transceiver.proto";
 import "spacex/api/device/wifi.proto";
+import "spacex/api/device/services/unlock/service.proto";
+import "google/protobuf/timestamp.proto";
 
 message ToDevice {
 	oneof message {
 		.SpaceX.API.Device.Request request = 1 [json_name="request"];
+		.SpaceX.API.Device.HealthCheck health_check = 2 [json_name="healthCheck"];
 	}
 }
 
@@ -21,7 +24,19 @@ message FromDevice {
 	oneof message {
 		.SpaceX.API.Device.Response response = 1 [json_name="response"];
 		.SpaceX.API.Device.Event event = 2 [json_name="event"];
+		.SpaceX.API.Device.HealthCheck health_check = 3 [json_name="healthCheck"];
 	}
+}
+
+message SensitiveCommand {
+	optional .google.protobuf.Timestamp timestamp = 1 [json_name="timestamp"];
+	optional string target_id = 2 [json_name="targetId"];
+	oneof request {
+		.SpaceX.API.Device.GetLocationRequest get_location = 3 [json_name="getLocation"];
+	}
+}
+
+message HealthCheck {
 }
 
 message Request {
@@ -31,8 +46,9 @@ message Request {
 	oneof request {
 		.SpaceX.API.Device.SignedData signed_request = 15 [json_name="signedRequest"];
 		.SpaceX.API.Device.GetNextIdRequest get_next_id = 1006 [json_name="getNextId"];
+		.SpaceX.API.Device.SignedData sensitive_request = 1078 [json_name="sensitiveRequest"];
 		.SpaceX.API.Device.AuthenticateRequest authenticate = 1005 [json_name="authenticate"];
-		.SpaceX.API.Device.EnableFlowRequest enable_flow = 1018 [json_name="enableFlow"];
+		.SpaceX.API.Device.EnableDebugTelemRequest enable_debug_telem = 1034 [json_name="enableDebugTelem"];
 		.SpaceX.API.Device.FactoryResetRequest factory_reset = 1011 [json_name="factoryReset"];
 		.SpaceX.API.Device.GetDeviceInfoRequest get_device_info = 1008 [json_name="getDeviceInfo"];
 		.SpaceX.API.Device.GetHistoryRequest get_history = 1007 [json_name="getHistory"];
@@ -50,19 +66,61 @@ message Request {
 		.SpaceX.API.Device.GetHeapDumpRequest get_heap_dump = 1019 [json_name="getHeapDump"];
 		.SpaceX.API.Device.RestartControlRequest restart_control = 1020 [json_name="restartControl"];
 		.SpaceX.API.Device.FuseRequest fuse = 1021 [json_name="fuse"];
+		.SpaceX.API.Device.GetPersistentStatsRequest get_persistent_stats = 1022 [json_name="getPersistentStats"];
+		.SpaceX.API.Device.GetConnectionsRequest get_connections = 1023 [json_name="getConnections"];
+		.SpaceX.API.Device.StartSpeedtestRequest start_speedtest = 1027 [json_name="startSpeedtest"];
+		.SpaceX.API.Device.GetSpeedtestStatusRequest get_speedtest_status = 1028 [json_name="getSpeedtestStatus"];
+		.SpaceX.API.Device.ReportClientSpeedtestRequest report_client_speedtest = 1029 [json_name="reportClientSpeedtest"];
+		.SpaceX.API.Device.InitiateRemoteSshRequest initiate_remote_ssh = 1030 [json_name="initiateRemoteSsh"];
+		.SpaceX.API.Device.SelfTestRequest self_test = 1031 [json_name="selfTest"];
+		.SpaceX.API.Device.SetTestModeRequest set_test_mode = 1032 [json_name="setTestMode"];
+		.SpaceX.API.Device.SoftwareUpdateRequest software_update = 1033 [json_name="softwareUpdate"];
+		.SpaceX.API.Device.IQCaptureRequest iq_capture = 1035 [json_name="iqCapture"];
+		.SpaceX.API.Device.GetRadioStatsRequest get_radio_stats = 1036 [json_name="getRadioStats"];
+		.SpaceX.API.Device.GetTimeRequest time = 1037 [json_name="time"];
+		.SpaceX.API.Device.RunIperfServerRequest run_iperf_server = 1038 [json_name="runIperfServer"];
 		.SpaceX.API.Device.DishStowRequest dish_stow = 2002 [json_name="dishStow"];
+		.SpaceX.API.Device.StartDishSelfTestRequest start_dish_self_test = 2012 [json_name="startDishSelfTest"];
 		.SpaceX.API.Device.DishGetContextRequest dish_get_context = 2003 [json_name="dishGetContext"];
 		.SpaceX.API.Device.DishGetObstructionMapRequest dish_get_obstruction_map = 2008 [json_name="dishGetObstructionMap"];
-		.SpaceX.API.Device.DishEmcRequest dish_emc = 2007 [json_name="dishEmc"];
-		.SpaceX.API.Device.TransceiverIFLoopbackTestRequest transceiver_if_loopback_test = 4001 [json_name="transceiverIfLoopbackTest"];
-		.SpaceX.API.Device.TransceiverGetStatusRequest transceiver_get_status = 4003 [json_name="transceiverGetStatus"];
-		.SpaceX.API.Device.TransceiverGetTelemetryRequest transceiver_get_telemetry = 4004 [json_name="transceiverGetTelemetry"];
+		.SpaceX.API.Device.DishSetEmcRequest dish_set_emc = 2007 [json_name="dishSetEmc"];
+		.SpaceX.API.Device.DishGetEmcRequest dish_get_emc = 2009 [json_name="dishGetEmc"];
+		.SpaceX.API.Device.DishSetConfigRequest dish_set_config = 2010 [json_name="dishSetConfig"];
+		.SpaceX.API.Device.DishGetConfigRequest dish_get_config = 2011 [json_name="dishGetConfig"];
+		.SpaceX.API.Device.DishPowerSaveRequest dish_power_save = 2013 [json_name="dishPowerSave"];
+		.SpaceX.API.Device.DishInhibitGpsRequest dish_inhibit_gps = 2014 [json_name="dishInhibitGps"];
+		.SpaceX.API.Device.DishGetDataRequest dish_get_data = 2015 [json_name="dishGetData"];
+		.SpaceX.API.Device.DishClearObstructionMapRequest dish_clear_obstruction_map = 2017 [json_name="dishClearObstructionMap"];
+		.SpaceX.API.Device.DishSetMaxPowerTestModeRequest dish_set_max_power_test_mode = 2018 [json_name="dishSetMaxPowerTestMode"];
+		.SpaceX.API.Device.DishActivateRssiScanRequest dish_activate_rssi_scan = 2019 [json_name="dishActivateRssiScan"];
+		.SpaceX.API.Device.DishGetRssiScanResultRequest dish_get_rssi_scan_result = 2020 [json_name="dishGetRssiScanResult"];
 		.SpaceX.API.Device.WifiGetClientsRequest wifi_get_clients = 3002 [json_name="wifiGetClients"];
-		.SpaceX.API.Device.WifiGetDiagnosticsRequest wifi_get_diagnostics = 3008 [json_name="wifiGetDiagnostics"];
 		.SpaceX.API.Device.WifiGetPingMetricsRequest wifi_get_ping_metrics = 3007 [json_name="wifiGetPingMetrics"];
 		.SpaceX.API.Device.WifiSetConfigRequest wifi_set_config = 3001 [json_name="wifiSetConfig"];
 		.SpaceX.API.Device.WifiGetConfigRequest wifi_get_config = 3009 [json_name="wifiGetConfig"];
 		.SpaceX.API.Device.WifiSetupRequest wifi_setup = 3003 [json_name="wifiSetup"];
+		.SpaceX.API.Device.WifiSetMeshDeviceTrustRequest wifi_set_mesh_device_trust = 3012 [json_name="wifiSetMeshDeviceTrust"];
+		.SpaceX.API.Device.WifiSetMeshConfigRequest wifi_set_mesh_config = 3013 [json_name="wifiSetMeshConfig"];
+		.SpaceX.API.Device.WifiGetClientHistoryRequest wifi_get_client_history = 3015 [json_name="wifiGetClientHistory"];
+		.SpaceX.API.Device.WifiSetClientGivenNameRequest wifi_set_client_given_name = 3017 [json_name="wifiSetClientGivenName"];
+		.SpaceX.API.Device.WifiSetAviationConformedRequest wifi_set_aviation_conformed = 3016 [json_name="wifiSetAviationConformed"];
+		.SpaceX.API.Device.WifiSelfTestRequest wifi_self_test = 3018 [json_name="wifiSelfTest"];
+		.SpaceX.API.Device.WifiRunSelfTestRequest wifi_run_self_test = 3028 [json_name="wifiRunSelfTest"];
+		.SpaceX.API.Device.WifiCalibrationModeRequest wifi_calibration_mode = 3019 [json_name="wifiCalibrationMode"];
+		.SpaceX.API.Device.WifiGuestInfoRequest wifi_guest_info = 3020 [json_name="wifiGuestInfo"];
+		.SpaceX.API.Device.WifiRfTestRequest wifi_rf_test = 3021 [json_name="wifiRfTest"];
+		.SpaceX.API.Device.WifiGetFirewallRequest wifi_get_firewall = 3024 [json_name="wifiGetFirewall"];
+		.SpaceX.API.Device.WifiTogglePoeNegotiationRequest wifi_toggle_poe_negotiation = 3025 [json_name="wifiTogglePoeNegotiation"];
+		.SpaceX.API.Device.WifiFactoryTestCommandRequest wifi_factory_test_command = 3026 [json_name="wifiFactoryTestCommand"];
+		.SpaceX.API.Device.WifiStartLocalTelemProxyRequest wifi_start_local_telem_proxy = 3027 [json_name="wifiStartLocalTelemProxy"];
+		.SpaceX.API.Device.WifiBackhaulStatsRequest wifi_backhaul_stats = 3029 [json_name="wifiBackhaulStats"];
+		.SpaceX.API.Device.WifiToggleUmbilicalModeRequest wifi_toggle_umbilical_mode = 3030 [json_name="wifiToggleUmbilicalMode"];
+		.SpaceX.API.Device.TransceiverIFLoopbackTestRequest transceiver_if_loopback_test = 4001 [json_name="transceiverIfLoopbackTest"];
+		.SpaceX.API.Device.TransceiverGetStatusRequest transceiver_get_status = 4003 [json_name="transceiverGetStatus"];
+		.SpaceX.API.Device.TransceiverGetTelemetryRequest transceiver_get_telemetry = 4004 [json_name="transceiverGetTelemetry"];
+		.SpaceX.API.Device.Services.Unlock.StartUnlockRequest start_unlock = 5000 [json_name="startUnlock"];
+		.SpaceX.API.Device.Services.Unlock.FinishUnlockRequest finish_unlock = 5001 [json_name="finishUnlock"];
+		.SpaceX.API.Device.GetDiagnosticsRequest get_diagnostics = 6000 [json_name="getDiagnostics"];
 	}
 }
 
@@ -72,7 +130,7 @@ message Response {
 	optional uint64 api_version = 3 [json_name="apiVersion"];
 	oneof response {
 		.SpaceX.API.Device.GetNextIdResponse get_next_id = 1006 [json_name="getNextId"];
-		.SpaceX.API.Device.EnableFlowResponse enable_flow = 1018 [json_name="enableFlow"];
+		.SpaceX.API.Device.EnableDebugTelemResponse enable_debug_telem = 1034 [json_name="enableDebugTelem"];
 		.SpaceX.API.Device.FactoryResetResponse factory_reset = 1011 [json_name="factoryReset"];
 		.SpaceX.API.Device.GetDeviceInfoResponse get_device_info = 1004 [json_name="getDeviceInfo"];
 		.SpaceX.API.Device.GetLogResponse get_log = 1012 [json_name="getLog"];
@@ -88,25 +146,58 @@ message Response {
 		.SpaceX.API.Device.GetHeapDumpResponse get_heap_dump = 1019 [json_name="getHeapDump"];
 		.SpaceX.API.Device.RestartControlResponse restart_control = 1020 [json_name="restartControl"];
 		.SpaceX.API.Device.FuseResponse fuse = 1021 [json_name="fuse"];
+		.SpaceX.API.Device.GetConnectionsResponse get_connections = 1023 [json_name="getConnections"];
+		.SpaceX.API.Device.StartSpeedtestResponse start_speedtest = 1027 [json_name="startSpeedtest"];
+		.SpaceX.API.Device.GetSpeedtestStatusResponse get_speedtest_status = 1028 [json_name="getSpeedtestStatus"];
+		.SpaceX.API.Device.ReportClientSpeedtestResponse report_client_speedtest = 1029 [json_name="reportClientSpeedtest"];
+		.SpaceX.API.Device.InitiateRemoteSshResponse initiate_remote_ssh = 1030 [json_name="initiateRemoteSsh"];
+		.SpaceX.API.Device.SelfTestResponse self_test = 1031 [json_name="selfTest"];
+		.SpaceX.API.Device.SetTestModeResponse set_test_mode = 1032 [json_name="setTestMode"];
+		.SpaceX.API.Device.SoftwareUpdateResponse software_update = 1033 [json_name="softwareUpdate"];
+		.SpaceX.API.Device.GetRadioStatsResponse get_radio_stats = 1035 [json_name="getRadioStats"];
+		.SpaceX.API.Device.GetTimeResponse time = 1037 [json_name="time"];
+		.SpaceX.API.Device.RunIperfServerResponse run_iperf_server = 1038 [json_name="runIperfServer"];
 		.SpaceX.API.Device.DishAuthenticateResponse dish_authenticate = 2005 [json_name="dishAuthenticate"];
 		.SpaceX.API.Device.DishGetContextResponse dish_get_context = 2003 [json_name="dishGetContext"];
 		.SpaceX.API.Device.DishGetHistoryResponse dish_get_history = 2006 [json_name="dishGetHistory"];
 		.SpaceX.API.Device.DishGetStatusResponse dish_get_status = 2004 [json_name="dishGetStatus"];
 		.SpaceX.API.Device.DishGetObstructionMapResponse dish_get_obstruction_map = 2008 [json_name="dishGetObstructionMap"];
 		.SpaceX.API.Device.DishStowResponse dish_stow = 2002 [json_name="dishStow"];
-		.SpaceX.API.Device.DishEmcResponse dish_emc = 2007 [json_name="dishEmc"];
-		.SpaceX.API.Device.TransceiverIFLoopbackTestResponse transceiver_if_loopback_test = 4001 [json_name="transceiverIfLoopbackTest"];
-		.SpaceX.API.Device.TransceiverGetStatusResponse transceiver_get_status = 4003 [json_name="transceiverGetStatus"];
-		.SpaceX.API.Device.TransceiverGetTelemetryResponse transceiver_get_telemetry = 4004 [json_name="transceiverGetTelemetry"];
+		.SpaceX.API.Device.StartDishSelfTestResponse start_dish_self_test = 2012 [json_name="startDishSelfTest"];
+		.SpaceX.API.Device.DishSetEmcResponse dish_set_emc = 2007 [json_name="dishSetEmc"];
+		.SpaceX.API.Device.DishGetEmcResponse dish_get_emc = 2009 [json_name="dishGetEmc"];
+		.SpaceX.API.Device.DishSetConfigResponse dish_set_config = 2010 [json_name="dishSetConfig"];
+		.SpaceX.API.Device.DishGetConfigResponse dish_get_config = 2011 [json_name="dishGetConfig"];
+		.SpaceX.API.Device.DishInhibitGpsResponse dish_inhibit_gps = 2013 [json_name="dishInhibitGps"];
+		.SpaceX.API.Device.DishClearObstructionMapResponse dish_clear_obstruction_map = 2015 [json_name="dishClearObstructionMap"];
+		.SpaceX.API.Device.DishSetMaxPowerTestModeResponse dish_set_max_power_test_mode = 2018 [json_name="dishSetMaxPowerTestMode"];
+		.SpaceX.API.Device.DishActivateRssiScanResponse dish_activate_rssi_scan = 2019 [json_name="dishActivateRssiScan"];
+		.SpaceX.API.Device.DishGetRssiScanResultResponse dish_get_rssi_scan_result = 2020 [json_name="dishGetRssiScanResult"];
 		.SpaceX.API.Device.WifiAuthenticateResponse wifi_authenticate = 3005 [json_name="wifiAuthenticate"];
 		.SpaceX.API.Device.WifiGetClientsResponse wifi_get_clients = 3002 [json_name="wifiGetClients"];
-		.SpaceX.API.Device.WifiGetDiagnosticsResponse wifi_get_diagnostics = 3008 [json_name="wifiGetDiagnostics"];
 		.SpaceX.API.Device.WifiGetHistoryResponse wifi_get_history = 3006 [json_name="wifiGetHistory"];
 		.SpaceX.API.Device.WifiGetPingMetricsResponse wifi_get_ping_metrics = 3007 [json_name="wifiGetPingMetrics"];
 		.SpaceX.API.Device.WifiGetStatusResponse wifi_get_status = 3004 [json_name="wifiGetStatus"];
 		.SpaceX.API.Device.WifiSetConfigResponse wifi_set_config = 3001 [json_name="wifiSetConfig"];
 		.SpaceX.API.Device.WifiGetConfigResponse wifi_get_config = 3009 [json_name="wifiGetConfig"];
 		.SpaceX.API.Device.WifiSetupResponse wifi_setup = 3003 [json_name="wifiSetup"];
+		.SpaceX.API.Device.WifiGetPersistentStatsResponse wifi_get_persistent_stats = 3022 [json_name="wifiGetPersistentStats"];
+		.SpaceX.API.Device.WifiSetMeshDeviceTrustResponse wifi_set_mesh_device_trust = 3012 [json_name="wifiSetMeshDeviceTrust"];
+		.SpaceX.API.Device.WifiSetMeshConfigResponse wifi_set_mesh_config = 3013 [json_name="wifiSetMeshConfig"];
+		.SpaceX.API.Device.WifiGetClientHistoryResponse wifi_get_client_history = 3015 [json_name="wifiGetClientHistory"];
+		.SpaceX.API.Device.WifiSelfTestResponse wifi_self_test = 3016 [json_name="wifiSelfTest"];
+		.SpaceX.API.Device.WifiGuestInfoResponse wifi_guest_info = 3020 [json_name="wifiGuestInfo"];
+		.SpaceX.API.Device.WifiRfTestResponse wifi_rf_test = 3021 [json_name="wifiRfTest"];
+		.SpaceX.API.Device.WifiGetFirewallResponse wifi_get_firewall = 3024 [json_name="wifiGetFirewall"];
+		.SpaceX.API.Device.WifiFactoryTestCommandResponse wifi_factory_test_command = 3025 [json_name="wifiFactoryTestCommand"];
+		.SpaceX.API.Device.WifiBackhaulStatsResponse wifi_backhaul_stats = 3026 [json_name="wifiBackhaulStats"];
+		.SpaceX.API.Device.TransceiverIFLoopbackTestResponse transceiver_if_loopback_test = 4001 [json_name="transceiverIfLoopbackTest"];
+		.SpaceX.API.Device.TransceiverGetStatusResponse transceiver_get_status = 4003 [json_name="transceiverGetStatus"];
+		.SpaceX.API.Device.TransceiverGetTelemetryResponse transceiver_get_telemetry = 4004 [json_name="transceiverGetTelemetry"];
+		.SpaceX.API.Device.Services.Unlock.StartUnlockResponse start_unlock = 5000 [json_name="startUnlock"];
+		.SpaceX.API.Device.Services.Unlock.FinishUnlockResponse finish_unlock = 5001 [json_name="finishUnlock"];
+		.SpaceX.API.Device.WifiGetDiagnosticsResponse wifi_get_diagnostics = 6000 [json_name="wifiGetDiagnostics"];
+		.SpaceX.API.Device.DishGetDiagnosticsResponse dish_get_diagnostics = 6001 [json_name="dishGetDiagnostics"];
 	}
 }
 
@@ -114,15 +205,23 @@ message Event {
 	oneof event {
 		.SpaceX.API.Device.WifiNewClientConnectedEvent wifi_new_client_connected = 3001 [json_name="wifiNewClientConnected"];
 		.SpaceX.API.Device.WifiAccountBondingEvent wifi_account_bonding = 3002 [json_name="wifiAccountBonding"];
+		.SpaceX.API.Device.WifiNewPeerEvent wifi_new_peer = 3003 [json_name="wifiNewPeer"];
+		.SpaceX.API.Device.WifiCloudStatusEvent wifi_cloud_status = 3004 [json_name="wifiCloudStatus"];
 	}
 }
 
-message EnableFlowRequest {
-	optional string name = 1 [json_name="name"];
-	optional uint32 duration_h = 2 [json_name="durationH"];
+message WifiCloudStatusEvent {
+	optional uint32 api_version = 4 [json_name="apiVersion"];
+	optional bool direct_link_to_dish = 1 [json_name="directLinkToDish"];
+	optional string hardware_version = 2 [json_name="hardwareVersion"];
+	optional bool is_bypassed = 3 [json_name="isBypassed"];
 }
 
-message EnableFlowResponse {
+message EnableDebugTelemRequest {
+	optional uint32 duration_m = 1 [json_name="durationM"];
+}
+
+message EnableDebugTelemResponse {
 }
 
 message FactoryResetRequest {
@@ -131,7 +230,15 @@ message FactoryResetRequest {
 message FactoryResetResponse {
 }
 
+message GetTimeRequest {
+}
+
+message GetTimeResponse {
+	optional int64 unix_nano = 1 [json_name="unixNano"];
+}
+
 message FuseRequest {
+	optional bool prevent_reboot = 1 [json_name="preventReboot"];
 }
 
 message FuseResponse {
@@ -144,8 +251,18 @@ message GetLogRequest {
 }
 
 message GetLogResponse {
+	optional .SpaceX.API.Device.GetLogResponse.Logs current = 4 [json_name="current"];
+	optional .SpaceX.API.Device.GetLogResponse.Logs saved = 5 [json_name="saved"];
 	optional string syslog = 1 [json_name="syslog"];
 	optional string offline_log = 2 [json_name="offlineLog"];
+	optional string persistent_log = 3 [json_name="persistentLog"];
+message Logs {
+	optional string syslog = 1 [json_name="syslog"];
+	optional string dmesg = 2 [json_name="dmesg"];
+	optional string kernel_panic = 3 [json_name="kernelPanic"];
+	optional string mtk_eth_procs = 4 [json_name="mtkEthProcs"];
+}
+
 }
 
 message GetPingRequest {
@@ -153,14 +270,16 @@ message GetPingRequest {
 
 message GetPingResponse {
 	repeated .SpaceX.API.Device.GetPingResponse.ResultsEntry results = 1 [json_name="results"];
-	message ResultsEntry {
-		optional string key = 1 [json_name="key"];
-		optional .SpaceX.API.Device.PingResult value = 2 [json_name="value"];
-	}
+message ResultsEntry {
+	optional string key = 1 [json_name="key"];
+	optional .SpaceX.API.Device.PingResult value = 2 [json_name="value"];
+}
+
 }
 
 message PingHostRequest {
 	optional string address = 3 [json_name="address"];
+	optional uint32 size = 4 [json_name="size"];
 }
 
 message PingHostResponse {
@@ -176,7 +295,39 @@ message RebootRequest {
 message RebootResponse {
 }
 
+message SpeedTestStats {
+	optional float latency_ms = 3 [json_name="latencyMs"];
+	optional uint64 start_time = 4 [json_name="startTime"];
+	optional int64 upload_start_time = 5 [json_name="uploadStartTime"];
+	optional int64 download_start_time = 6 [json_name="downloadStartTime"];
+	optional float upload_mbps = 1 [json_name="uploadMbps"];
+	optional float download_mbps = 2 [json_name="downloadMbps"];
+	optional .SpaceX.API.Device.SpeedTestStats.Target target = 7 [json_name="target"];
+	optional uint32 tcp_streams = 8 [json_name="tcpStreams"];
+	enum Target {
+		UNKNOWN = 0;
+		FASTCOM = 1;
+		CLOUDFLARE = 2;
+	}
+}
+
+message ClientPlatform {
+	optional .SpaceX.API.Device.ClientPlatform.Platform platform = 1 [json_name="platform"];
+	optional float major_version = 2 [json_name="majorVersion"];
+	optional float minor_version = 3 [json_name="minorVersion"];
+	enum Platform {
+		UNKNOWN = 0;
+		IOS = 1;
+		ANDROID = 2;
+		WEB = 3;
+	}
+}
+
 message SpeedTestRequest {
+	optional uint32 id = 4 [json_name="id"];
+	optional .SpaceX.API.Device.SpeedTestStats client_speedtest = 1 [json_name="clientSpeedtest"];
+	optional float client_rssi = 2 [json_name="clientRssi"];
+	optional .SpaceX.API.Device.ClientPlatform client_platform = 3 [json_name="clientPlatform"];
 }
 
 message SpeedTestResponse {
@@ -186,6 +337,7 @@ message SpeedTestResponse {
 	optional float download_mbps = 4 [json_name="downloadMbps"];
 	optional float upload_mbps = 5 [json_name="uploadMbps"];
 	optional float latency_ms = 6 [json_name="latencyMs"];
+	optional .SpaceX.API.Device.SpeedTestStats router_speedtest = 15 [json_name="routerSpeedtest"];
 	optional float download_mbps_1_tcp_conn = 7 [json_name="downloadMbps1TcpConn"];
 	optional float upload_mbps_1_tcp_conn = 8 [json_name="uploadMbps1TcpConn"];
 	optional float download_mbps_4_tcp_conn = 9 [json_name="downloadMbps4TcpConn"];
@@ -194,6 +346,31 @@ message SpeedTestResponse {
 	optional float upload_mbps_16_tcp_conn = 12 [json_name="uploadMbps16TcpConn"];
 	optional float download_mbps_64_tcp_conn = 13 [json_name="downloadMbps64TcpConn"];
 	optional float upload_mbps_64_tcp_conn = 14 [json_name="uploadMbps64TcpConn"];
+}
+
+message RunIperfServerRequest {
+	optional uint32 duration_s = 1 [json_name="durationS"];
+}
+
+message RunIperfServerResponse {
+	optional uint32 port = 1 [json_name="port"];
+}
+
+message GetConnectionsRequest {
+}
+
+message GetConnectionsResponse {
+	repeated .SpaceX.API.Device.GetConnectionsResponse.ServicesEntry services = 1 [json_name="services"];
+message ServiceConnection {
+	optional string address = 1 [json_name="address"];
+	optional int32 seconds_since_success = 2 [json_name="secondsSinceSuccess"];
+}
+
+message ServicesEntry {
+	optional string key = 1 [json_name="key"];
+	optional .SpaceX.API.Device.GetConnectionsResponse.ServiceConnection value = 2 [json_name="value"];
+}
+
 }
 
 message GetDeviceInfoRequest {
@@ -214,6 +391,8 @@ message SetSkuRequest {
 	optional string sku = 1 [json_name="sku"];
 	optional string country_code = 2 [json_name="countryCode"];
 	optional bool apply_country_code = 4 [json_name="applyCountryCode"];
+	optional bool pin_country_code = 5 [json_name="pinCountryCode"];
+	optional bool custom_power_table = 6 [json_name="customPowerTable"];
 }
 
 message SetSkuResponse {
@@ -238,6 +417,13 @@ message GetNetworkInterfacesResponse {
 	repeated .SpaceX.API.Device.NetworkInterface network_interfaces = 1006 [json_name="networkInterfaces"];
 }
 
+message GetRadioStatsRequest {
+}
+
+message GetRadioStatsResponse {
+	repeated .SpaceX.API.Device.RadioStats radio_stats = 1 [json_name="radioStats"];
+}
+
 message GetHeapDumpRequest {
 }
 
@@ -246,14 +432,16 @@ message GetHeapDumpResponse {
 }
 
 message GetLocationRequest {
+	optional .SpaceX.API.Device.PositionSource source = 1 [json_name="source"];
 }
 
 message GetLocationResponse {
 	optional .SpaceX.API.Device.LLAPosition lla = 1 [json_name="lla"];
-	optional .SpaceX.API.Device.ECEFPosition ecef = 2 [json_name="ecef"];
+	optional double sigma_m = 4 [json_name="sigmaM"];
+	optional .SpaceX.API.Device.PositionSource source = 3 [json_name="source"];
 }
 
-message DishEmcRequest {
+message DishSetEmcRequest {
 	optional double theta = 1 [json_name="theta"];
 	optional double phi = 2 [json_name="phi"];
 	optional uint32 rx_chan = 3 [json_name="rxChan"];
@@ -272,24 +460,34 @@ message DishEmcRequest {
 	optional bool manual_tilting = 18 [json_name="manualTilting"];
 	optional bool tilt_to_stowed = 19 [json_name="tiltToStowed"];
 	optional bool reboot = 20 [json_name="reboot"];
+	optional bool continuous_motor_test = 21 [json_name="continuousMotorTest"];
+	optional double distance_override_meters = 22 [json_name="distanceOverrideMeters"];
+	optional uint32 amplitude_taper_override = 23 [json_name="amplitudeTaperOverride"];
+	optional uint32 country_code_override = 24 [json_name="countryCodeOverride"];
+	optional int32 tx_duty_cycle_override = 25 [json_name="txDutyCycleOverride"];
+	optional int32 rx_duty_cycle_override = 26 [json_name="rxDutyCycleOverride"];
+	optional double eirp_legal_limit_dbw_override = 27 [json_name="eirpLegalLimitDbwOverride"];
+	optional double eirp_adjustment_db = 28 [json_name="eirpAdjustmentDb"];
 }
 
-message DishEmcResponse {
-	optional bool is_test_device = 1 [json_name="isTestDevice"];
+message DishSetEmcResponse {
+}
+
+message DishSetMaxPowerTestModeRequest {
+	optional bool enabled = 1 [json_name="enabled"];
+}
+
+message DishSetMaxPowerTestModeResponse {
+	optional bool enabled = 1 [json_name="enabled"];
+}
+
+message DishGetEmcRequest {
+}
+
+message DishGetEmcResponse {
 	optional string uuid = 2 [json_name="uuid"];
 	optional uint64 timestamp = 3 [json_name="timestamp"];
-	optional string state = 4 [json_name="state"];
-	optional string sky_search_state = 5 [json_name="skySearchState"];
-	optional float snr = 6 [json_name="snr"];
-	optional float seconds_until_schedule = 7 [json_name="secondsUntilSchedule"];
-	optional double snr_uptime = 8 [json_name="snrUptime"];
-	optional double cplane_uptime = 9 [json_name="cplaneUptime"];
-	optional double percent_scheduled = 10 [json_name="percentScheduled"];
 	optional uint32 cplane_updates = 11 [json_name="cplaneUpdates"];
-	optional double downlink_throughput = 12 [json_name="downlinkThroughput"];
-	optional double uplink_throughput = 13 [json_name="uplinkThroughput"];
-	optional bool connected = 14 [json_name="connected"];
-	optional int32 sys_uptime = 15 [json_name="sysUptime"];
 	optional double gps_latitude = 16 [json_name="gpsLatitude"];
 	optional double gps_longitude = 17 [json_name="gpsLongitude"];
 	optional double gps_pdop = 18 [json_name="gpsPdop"];
@@ -300,10 +498,6 @@ message DishEmcResponse {
 	optional uint32 tx_channel = 23 [json_name="txChannel"];
 	optional float t_dbf_max = 24 [json_name="tDbfMax"];
 	optional double t_center = 25 [json_name="tCenter"];
-	optional double baseline_heating = 26 [json_name="baselineHeating"];
-	optional double additional_heating = 27 [json_name="additionalHeating"];
-	optional double total_heating = 28 [json_name="totalHeating"];
-	optional double target_total_heating = 29 [json_name="targetTotalHeating"];
 	optional bool auto_power_snow_melt_enabled = 30 [json_name="autoPowerSnowMeltEnabled"];
 	optional double voltage = 32 [json_name="voltage"];
 	optional uint32 rx_beam_state = 33 [json_name="rxBeamState"];
@@ -313,7 +507,6 @@ message DishEmcResponse {
 	optional double tilt_angle = 37 [json_name="tiltAngle"];
 	optional uint32 pll_tx_lock_detected = 38 [json_name="pllTxLockDetected"];
 	optional bool eirp_exceeded_threshold = 39 [json_name="eirpExceededThreshold"];
-	optional float eirp_scale_override = 40 [json_name="eirpScaleOverride"];
 	optional bool idle_override_enabled = 41 [json_name="idleOverrideEnabled"];
 	optional bool theta_override_enabled = 42 [json_name="thetaOverrideEnabled"];
 	optional double theta_override_value = 43 [json_name="thetaOverrideValue"];
@@ -328,4 +521,160 @@ message DishEmcResponse {
 	optional bool force_pll_unlock = 52 [json_name="forcePllUnlock"];
 	optional uint32 ut_ine_success = 53 [json_name="utIneSuccess"];
 	optional bool rf_ready = 54 [json_name="rfReady"];
+	optional bool tilt_to_stowed = 55 [json_name="tiltToStowed"];
+	optional bool reboot = 56 [json_name="reboot"];
+	optional bool continuous_motor_test = 57 [json_name="continuousMotorTest"];
+	optional double distance_override_meters = 58 [json_name="distanceOverrideMeters"];
+	optional uint32 amplitude_taper_override = 59 [json_name="amplitudeTaperOverride"];
+	optional bool amplitude_taper_enabled = 60 [json_name="amplitudeTaperEnabled"];
+	optional double amplitude_taper_scale = 61 [json_name="amplitudeTaperScale"];
+	optional uint32 country_code_override = 62 [json_name="countryCodeOverride"];
+	optional double max_pointing_distance = 63 [json_name="maxPointingDistance"];
+	optional double distance_scaling_factor = 64 [json_name="distanceScalingFactor"];
+	optional int32 tx_duty_cycle_override = 65 [json_name="txDutyCycleOverride"];
+	optional int32 rx_duty_cycle_override = 66 [json_name="rxDutyCycleOverride"];
+	optional float tx_time_ms = 67 [json_name="txTimeMs"];
+	optional float rx_time_ms = 68 [json_name="rxTimeMs"];
+	optional double eirp_legal_limit_dbw = 69 [json_name="eirpLegalLimitDbw"];
+	optional double eirp_legal_limit_dbw_override = 70 [json_name="eirpLegalLimitDbwOverride"];
+	optional double eirp_adjustment_db = 71 [json_name="eirpAdjustmentDb"];
+	optional double eirp_predicted_dbw = 72 [json_name="eirpPredictedDbw"];
 }
+
+message GetPersistentStatsRequest {
+}
+
+message StartSpeedtestRequest {
+}
+
+message StartSpeedtestResponse {
+}
+
+message SpeedtestStatus {
+	optional bool running = 1 [json_name="running"];
+	optional uint32 id = 2 [json_name="id"];
+	optional .SpaceX.API.Device.SpeedtestStatus.Direction up = 1000 [json_name="up"];
+	optional .SpaceX.API.Device.SpeedtestStatus.Direction down = 1001 [json_name="down"];
+message Direction {
+	repeated float throughputs_mbps = 1 [json_name="throughputsMbps"];
+	optional .SpaceX.API.Device.SpeedtestError err = 2 [json_name="err"];
+}
+
+}
+
+message GetSpeedtestStatusRequest {
+}
+
+message GetSpeedtestStatusResponse {
+	optional .SpaceX.API.Device.SpeedtestStatus status = 1 [json_name="status"];
+}
+
+message ReportClientSpeedtestRequest {
+	optional uint32 id = 1 [json_name="id"];
+	optional .SpaceX.API.Device.SpeedTestStats client_speedtest = 2 [json_name="clientSpeedtest"];
+	optional .SpaceX.API.Device.SpeedTestStats wifi_speedtest = 5 [json_name="wifiSpeedtest"];
+	optional float client_rssi = 3 [json_name="clientRssi"];
+	optional .SpaceX.API.Device.ClientPlatform client_platform = 4 [json_name="clientPlatform"];
+	optional string app_version = 6 [json_name="appVersion"];
+	optional uint32 app_build = 7 [json_name="appBuild"];
+}
+
+message ReportClientSpeedtestResponse {
+}
+
+message DishPowerSaveRequest {
+	optional uint32 power_save_start_minutes = 1 [json_name="powerSaveStartMinutes"];
+	optional uint32 power_save_duration_minutes = 2 [json_name="powerSaveDurationMinutes"];
+	optional bool enable_power_save = 3 [json_name="enablePowerSave"];
+}
+
+message IQCaptureRequest {
+}
+
+message GetDiagnosticsRequest {
+}
+
+message WifiGetDiagnosticsResponse {
+	optional string id = 1 [json_name="id"];
+	optional string hardware_version = 2 [json_name="hardwareVersion"];
+	optional string software_version = 3 [json_name="softwareVersion"];
+	repeated .SpaceX.API.Device.WifiGetDiagnosticsResponse.Network networks = 4 [json_name="networks"];
+message Network {
+	optional string domain = 1 [json_name="domain"];
+	optional string ipv4 = 2 [json_name="ipv4"];
+	repeated string ipv6 = 3 [json_name="ipv6"];
+	optional uint32 clients_ethernet = 10 [json_name="clientsEthernet"];
+	optional uint32 clients_2ghz = 11 [json_name="clients2ghz"];
+	optional uint32 clients_5ghz = 12 [json_name="clients5ghz"];
+}
+
+}
+
+message DishGetDiagnosticsResponse {
+	optional string id = 1 [json_name="id"];
+	optional string hardware_version = 2 [json_name="hardwareVersion"];
+	optional string software_version = 3 [json_name="softwareVersion"];
+	optional int32 utc_offset_s = 4 [json_name="utcOffsetS"];
+	optional .SpaceX.API.Device.DishGetDiagnosticsResponse.TestResult hardware_self_test = 7 [json_name="hardwareSelfTest"];
+	optional .SpaceX.API.Device.DishGetDiagnosticsResponse.Alerts alerts = 5 [json_name="alerts"];
+	optional .SpaceX.API.Device.DishGetDiagnosticsResponse.DisablementCode disablement_code = 6 [json_name="disablementCode"];
+	optional .SpaceX.API.Device.DishGetDiagnosticsResponse.Location location = 8 [json_name="location"];
+message Alerts {
+	optional bool dish_is_heating = 1 [json_name="dishIsHeating"];
+	optional bool dish_thermal_throttle = 2 [json_name="dishThermalThrottle"];
+	optional bool dish_thermal_shutdown = 3 [json_name="dishThermalShutdown"];
+	optional bool power_supply_thermal_throttle = 4 [json_name="powerSupplyThermalThrottle"];
+	optional bool motors_stuck = 5 [json_name="motorsStuck"];
+	optional bool mast_not_near_vertical = 6 [json_name="mastNotNearVertical"];
+	optional bool slow_ethernet_speeds = 7 [json_name="slowEthernetSpeeds"];
+	optional bool software_install_pending = 8 [json_name="softwareInstallPending"];
+	optional bool moving_too_fast_for_policy = 9 [json_name="movingTooFastForPolicy"];
+	optional bool obstructed = 10 [json_name="obstructed"];
+}
+
+message Location {
+	optional bool enabled = 1 [json_name="enabled"];
+	optional double latitude = 2 [json_name="latitude"];
+	optional double longitude = 3 [json_name="longitude"];
+	optional double altitude_meters = 4 [json_name="altitudeMeters"];
+}
+
+	enum TestResult {
+		NO_RESULT = 0;
+		PASSED = 1;
+		FAILED = 2;
+	}
+	enum DisablementCode {
+		UNKNOWN = 0;
+		OKAY = 1;
+		NO_ACTIVE_ACCOUNT = 2;
+		TOO_FAR_FROM_SERVICE_ADDRESS = 3;
+		IN_OCEAN = 4;
+		INVALID_COUNTRY = 5;
+		BLOCKED_COUNTRY = 6;
+		DATA_OVERAGE_SANDBOX_POLICY = 7;
+	}
+}
+
+enum PositionSource {
+	AUTO = 0;
+	NONE = 1;
+	UT_INFO = 2;
+	EXTERNAL = 3;
+	GPS = 4;
+	STARLINK = 5;
+	GNC_GPS = 6;
+	GNC_PNT = 7;
+	GNC_FUSED = 8;
+	GNC_RAW = 9;
+}
+
+enum SpeedtestError {
+	SPEEDTEST_ERROR_NONE = 0;
+	SPEEDTEST_ERROR_UNKNOWN = 1;
+	SPEEDTEST_ERROR_TOKEN = 2;
+	SPEEDTEST_ERROR_API = 3;
+	SPEEDTEST_ERROR_NO_RESULT = 4;
+	SPEEDTEST_ERROR_OFFLINE = 5;
+}
+

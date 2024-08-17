@@ -8,3 +8,4 @@ message Status {
 	optional int32 code = 1 [json_name="code"];
 	optional string message = 2 [json_name="message"];
 }
+

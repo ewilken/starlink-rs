@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+package google.protobuf;
+
+option go_package = "google.golang.org/protobuf/types/known/wrapperspb";
+
+message DoubleValue {
+	optional double value = 1 [json_name="value"];
+}
+
+message FloatValue {
+	optional float value = 1 [json_name="value"];
+}
+
+message Int64Value {
+	optional int64 value = 1 [json_name="value"];
+}
+
+message UInt64Value {
+	optional uint64 value = 1 [json_name="value"];
+}
+
+message Int32Value {
+	optional int32 value = 1 [json_name="value"];
+}
+
+message UInt32Value {
+	optional uint32 value = 1 [json_name="value"];
+}
+
+message BoolValue {
+	optional bool value = 1 [json_name="value"];
+}
+
+message StringValue {
+	optional string value = 1 [json_name="value"];
+}
+
+message BytesValue {
+	optional bytes value = 1 [json_name="value"];
+}
+

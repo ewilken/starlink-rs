@@ -4,15 +4,23 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         .protoc_arg("--experimental_allow_proto3_optional")
         .compile(
             &[
+                "proto/google/protobuf/timestamp.proto",
+                "proto/google/protobuf/wrappers.proto",
                 "proto/spacex/api/common/status/status.proto",
                 "proto/spacex/api/device/command.proto",
                 "proto/spacex/api/device/common.proto",
                 "proto/spacex/api/device/device.proto",
                 "proto/spacex/api/device/dish.proto",
+                "proto/spacex/api/device/dish_config.proto",
+                "proto/spacex/api/device/rssi_scan.proto",
                 "proto/spacex/api/device/service.proto",
+                "proto/spacex/api/device/services/unlock/service.proto",
                 "proto/spacex/api/device/transceiver.proto",
-                "proto/spacex/api/device/wifi_config.proto",
                 "proto/spacex/api/device/wifi.proto",
+                "proto/spacex/api/device/wifi_config.proto",
+                "proto/spacex/api/device/wifi_util.proto",
+                "proto/spacex/api/satellites/network/ut_disablement_codes.proto",
+                "proto/spacex/api/telemetron/public/common/time.proto",
             ],
             &["proto/"],
         )?;

@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package SpaceX.API.Device.Services.Unlock;
+
+message UnlockChallenge {
+	optional string device_id = 1 [json_name="deviceId"];
+	optional bytes nonce = 2 [json_name="nonce"];
+	optional bytes sign_spki = 4 [json_name="signSpki"];
+	optional string grant_keydata = 5 [json_name="grantKeydata"];
+	optional string service_keydata = 6 [json_name="serviceKeydata"];
+	repeated string authority_grants = 7 [json_name="authorityGrants"];
+}
+
+message StartUnlockRequest {
+}
+
+message StartUnlockResponse {
+	optional string device_id = 1 [json_name="deviceId"];
+	optional bytes nonce = 2 [json_name="nonce"];
+	optional bytes sign_spki = 3 [json_name="signSpki"];
+}
+
+message FinishUnlockRequest {
+	optional bytes challenge = 1 [json_name="challenge"];
+	optional bytes signature = 2 [json_name="signature"];
+}
+
+message FinishUnlockResponse {
+	optional uint32 status = 1 [json_name="status"];
+}
+

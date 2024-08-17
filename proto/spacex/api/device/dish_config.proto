@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package SpaceX.API.Device;
+
+option go_package = "spacex.com/api/device";
+
+message DishConfig {
+	optional .SpaceX.API.Device.DishConfig.SnowMeltMode snow_melt_mode = 1 [json_name="snowMeltMode"];
+	optional bool apply_snow_melt_mode = 1001 [json_name="applySnowMeltMode"];
+	optional .SpaceX.API.Device.DishConfig.LocationRequestMode location_request_mode = 2 [json_name="locationRequestMode"];
+	optional bool apply_location_request_mode = 2001 [json_name="applyLocationRequestMode"];
+	optional .SpaceX.API.Device.DishConfig.LevelDishMode level_dish_mode = 3 [json_name="levelDishMode"];
+	optional bool apply_level_dish_mode = 3001 [json_name="applyLevelDishMode"];
+	optional uint32 power_save_start_minutes = 4 [json_name="powerSaveStartMinutes"];
+	optional bool apply_power_save_start_minutes = 4001 [json_name="applyPowerSaveStartMinutes"];
+	optional uint32 power_save_duration_minutes = 5 [json_name="powerSaveDurationMinutes"];
+	optional bool apply_power_save_duration_minutes = 5001 [json_name="applyPowerSaveDurationMinutes"];
+	optional bool power_save_mode = 6 [json_name="powerSaveMode"];
+	optional bool apply_power_save_mode = 6001 [json_name="applyPowerSaveMode"];
+	optional bool swupdate_three_day_deferral_enabled = 7 [json_name="swupdateThreeDayDeferralEnabled"];
+	optional bool apply_swupdate_three_day_deferral_enabled = 7001 [json_name="applySwupdateThreeDayDeferralEnabled"];
+	enum SnowMeltMode {
+		AUTO = 0;
+		ALWAYS_ON = 1;
+		ALWAYS_OFF = 2;
+	}
+	enum LocationRequestMode {
+		NONE = 0;
+		LOCAL = 1;
+	}
+	enum LevelDishMode {
+		TILT_LIKE_NORMAL = 0;
+		FORCE_LEVEL = 1;
+	}
+}
+

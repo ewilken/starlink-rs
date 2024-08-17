@@ -7,15 +7,36 @@ option go_package = "spacex.com/api/device";
 message PublicKey {
 	optional string key = 1 [json_name="key"];
 	repeated .SpaceX.API.Device.Capability capabilities = 2 [json_name="capabilities"];
+	optional .SpaceX.API.Device.User user = 3 [json_name="user"];
 }
 
 enum Capability {
 	READ = 0;
+	READ_INTERNAL = 13;
+	READ_PRIVATE = 7;
+	LOCAL = 14;
 	WRITE = 1;
+	WRITE_PERSISTENT = 11;
 	DEBUG = 2;
 	ADMIN = 3;
 	SETUP = 4;
 	SET_SKU = 5;
 	REFRESH = 6;
-	READ_PRIVATE = 7;
+	FUSE = 8;
+	RESET = 9;
+	TEST = 10;
+	SSH = 12;
+	GUEST = 15;
 }
+
+enum User {
+	NO_USER = 0;
+	GOD = 1;
+	LAN = 2;
+	CLOUD = 3;
+	FACTORY = 4;
+	ROUTER = 5;
+	GUEST_LAN = 6;
+	SENSITIVE_COMMANDING = 7;
+}
+

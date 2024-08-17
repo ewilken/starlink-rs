@@ -7,9 +7,19 @@ option go_package = "spacex.com/api/device";
 message DeviceInfo {
 	optional string id = 1 [json_name="id"];
 	optional string hardware_version = 2 [json_name="hardwareVersion"];
+	optional int32 board_rev = 14 [json_name="boardRev"];
 	optional string software_version = 3 [json_name="softwareVersion"];
+	optional string manufactured_version = 11 [json_name="manufacturedVersion"];
+	optional int64 generation_number = 12 [json_name="generationNumber"];
 	optional string country_code = 4 [json_name="countryCode"];
 	optional int32 utc_offset_s = 5 [json_name="utcOffsetS"];
+	optional bool software_partitions_equal = 6 [json_name="softwarePartitionsEqual"];
+	optional bool is_dev = 7 [json_name="isDev"];
+	optional int32 bootcount = 8 [json_name="bootcount"];
+	optional int32 anti_rollback_version = 9 [json_name="antiRollbackVersion"];
+	optional bool is_hitl = 10 [json_name="isHitl"];
+	optional .SpaceX.API.Device.BootInfo boot = 1001 [json_name="boot"];
+	optional bool dish_cohoused = 13 [json_name="dishCohoused"];
 }
 
 message DeviceState {
@@ -27,6 +37,25 @@ message GetNextIdRequest {
 message GetNextIdResponse {
 	optional uint64 id = 1 [json_name="id"];
 	optional uint64 epoch_id = 2 [json_name="epochId"];
+}
+
+message BootInfo {
+	repeated .SpaceX.API.Device.BootInfo.CountByReasonEntry count_by_reason = 1 [json_name="countByReason"];
+	repeated .SpaceX.API.Device.BootInfo.CountByReasonDeltaEntry count_by_reason_delta = 4 [json_name="countByReasonDelta"];
+	optional .SpaceX.API.Device.BootReason last_reason = 2 [json_name="lastReason"];
+	optional int32 last_count = 3 [json_name="lastCount"];
+	optional bool crash_boot = 5 [json_name="crashBoot"];
+	optional int32 crash_boot_count = 6 [json_name="crashBootCount"];
+message CountByReasonEntry {
+	optional int32 key = 1 [json_name="key"];
+	optional int32 value = 2 [json_name="value"];
+}
+
+message CountByReasonDeltaEntry {
+	optional int32 key = 1 [json_name="key"];
+	optional int32 value = 2 [json_name="value"];
+}
+
 }
 
 message PingTarget {
@@ -58,21 +87,28 @@ message ChallengeResponse {
 
 message NetworkInterface {
 	optional string name = 1 [json_name="name"];
+	optional bool up = 4 [json_name="up"];
+	optional string mac_address = 5 [json_name="macAddress"];
+	repeated string ipv4_addresses = 6 [json_name="ipv4Addresses"];
+	repeated string ipv6_addresses = 7 [json_name="ipv6Addresses"];
 	optional .SpaceX.API.Device.NetworkInterface.RxStats rx_stats = 2 [json_name="rxStats"];
 	optional .SpaceX.API.Device.NetworkInterface.TxStats tx_stats = 3 [json_name="txStats"];
 	oneof interface {
 		.SpaceX.API.Device.EthernetNetworkInterface ethernet = 1000 [json_name="ethernet"];
 		.SpaceX.API.Device.WifiNetworkInterface wifi = 1001 [json_name="wifi"];
+		.SpaceX.API.Device.BridgeNetworkInterface bridge = 1002 [json_name="bridge"];
 	}
-	message RxStats {
-		optional uint64 bytes = 1 [json_name="bytes"];
-		optional uint64 packets = 2 [json_name="packets"];
-		optional uint64 frame_errors = 3 [json_name="frameErrors"];
-	}
-	message TxStats {
-		optional uint64 bytes = 1 [json_name="bytes"];
-		optional uint64 packets = 2 [json_name="packets"];
-	}
+message RxStats {
+	optional uint64 bytes = 1 [json_name="bytes"];
+	optional uint64 packets = 2 [json_name="packets"];
+	optional uint64 frame_errors = 3 [json_name="frameErrors"];
+}
+
+message TxStats {
+	optional uint64 bytes = 1 [json_name="bytes"];
+	optional uint64 packets = 2 [json_name="packets"];
+}
+
 }
 
 message EthernetNetworkInterface {
@@ -88,11 +124,24 @@ message EthernetNetworkInterface {
 }
 
 message WifiNetworkInterface {
-	optional .SpaceX.API.Device.WifiNetworkInterface.ThermalStatus thermal_status = 1 [json_name="thermalStatus"];
-	message ThermalStatus {
-		optional uint32 level = 1 [json_name="level"];
-		optional uint32 temp = 2 [json_name="temp"];
-	}
+	optional .SpaceX.API.Device.WifiNetworkInterface.InvalidPacketCounts invalid_packet_counts = 2 [json_name="invalidPacketCounts"];
+	optional uint32 channel = 3 [json_name="channel"];
+	optional uint32 missed_beacons = 8 [json_name="missedBeacons"];
+	optional double link_quality = 4 [json_name="linkQuality"];
+	optional double signal_level = 5 [json_name="signalLevel"];
+	optional double noise_level = 6 [json_name="noiseLevel"];
+message InvalidPacketCounts {
+	optional uint32 rx_invalid_nwid = 1 [json_name="rxInvalidNwid"];
+	optional uint32 rx_invalid_crypt = 2 [json_name="rxInvalidCrypt"];
+	optional uint32 rx_invalid_frag = 3 [json_name="rxInvalidFrag"];
+	optional uint32 tx_excessive_retries = 4 [json_name="txExcessiveRetries"];
+	optional uint32 invalid_misc = 5 [json_name="invalidMisc"];
+}
+
+}
+
+message BridgeNetworkInterface {
+	repeated string member_names = 1 [json_name="memberNames"];
 }
 
 message LLAPosition {
@@ -106,3 +155,40 @@ message ECEFPosition {
 	optional double y = 2 [json_name="y"];
 	optional double z = 3 [json_name="z"];
 }
+
+message InitiateRemoteSshRequest {
+}
+
+message InitiateRemoteSshResponse {
+	optional uint32 port = 1 [json_name="port"];
+	optional string address = 2 [json_name="address"];
+	optional bytes stsafe = 3 [json_name="stsafe"];
+}
+
+message SoftwareUpdateRequest {
+	optional uint64 stream_id = 1 [json_name="streamId"];
+	optional bytes data = 2 [json_name="data"];
+	optional bool open = 3 [json_name="open"];
+	optional bool close = 4 [json_name="close"];
+}
+
+message SoftwareUpdateResponse {
+}
+
+enum BootReason {
+	BOOT_REASON_UNKNOWN = 0;
+	FORGOTTEN = 1;
+	POWER_CYCLE = 2;
+	COMMAND = 3;
+	SOFTWARE_UPDATE = 4;
+	CONFIG_UPDATE = 5;
+	UPTIME_FDIR = 6;
+	REPEATER_FDIR = 7;
+	AVIATION_ETH_WAN_FDIR = 8;
+	KERNEL_PANIC = 9;
+	INTENTIONAL_KERNEL_PANIC = 14;
+	MCU_BRINGUP_FAILED_FDIR = 11;
+	AVIATION_OUTAGE_FDIR = 12;
+	SOFTWARE_WATCHDOG = 13;
+}
+

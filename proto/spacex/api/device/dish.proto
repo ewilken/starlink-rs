@@ -5,6 +5,9 @@ package SpaceX.API.Device;
 option go_package = "spacex.com/api/device";
 
 import "spacex/api/device/common.proto";
+import "spacex/api/device/dish_config.proto";
+import "spacex/api/device/rssi_scan.proto";
+import "spacex/api/satellites/network/ut_disablement_codes.proto";
 
 message DishStowRequest {
 	optional bool unstow = 1 [json_name="unstow"];
@@ -20,13 +23,47 @@ message DishGetContextResponse {
 	optional .SpaceX.API.Device.DeviceInfo device_info = 1 [json_name="deviceInfo"];
 	optional .SpaceX.API.Device.DeviceState device_state = 7 [json_name="deviceState"];
 	optional float obstruction_fraction = 2 [json_name="obstructionFraction"];
+	optional float obstruction_time = 20 [json_name="obstructionTime"];
 	optional float obstruction_valid_s = 3 [json_name="obstructionValidS"];
+	optional bool obstruction_current = 12 [json_name="obstructionCurrent"];
 	optional uint32 cell_id = 4 [json_name="cellId"];
 	optional uint32 pop_rack_id = 5 [json_name="popRackId"];
 	optional uint32 initial_satellite_id = 8 [json_name="initialSatelliteId"];
 	optional uint32 initial_gateway_id = 9 [json_name="initialGatewayId"];
 	optional bool on_backup_beam = 10 [json_name="onBackupBeam"];
 	optional float seconds_to_slot_end = 6 [json_name="secondsToSlotEnd"];
+	optional bool debug_telemetry_enabled = 11 [json_name="debugTelemetryEnabled"];
+	optional float pop_ping_drop_rate_15s_mean = 13 [json_name="popPingDropRate15sMean"];
+	optional float pop_ping_latency_ms_15s_mean = 14 [json_name="popPingLatencyMs15sMean"];
+	optional float seconds_since_last_1s_outage = 15 [json_name="secondsSinceLast1sOutage"];
+	optional float seconds_since_last_2s_outage = 16 [json_name="secondsSinceLast2sOutage"];
+	optional float seconds_since_last_5s_outage = 17 [json_name="secondsSinceLast5sOutage"];
+	optional float seconds_since_last_15s_outage = 18 [json_name="secondsSinceLast15sOutage"];
+	optional float seconds_since_last_60s_outage = 19 [json_name="secondsSinceLast60sOutage"];
+	optional .SpaceX.API.Satellites.Network.UtDisablementCode disablement_code = 21 [json_name="disablementCode"];
+	optional float ku_mac_active_ratio = 22 [json_name="kuMacActiveRatio"];
+}
+
+message DishOutage {
+	optional .SpaceX.API.Device.DishOutage.Cause cause = 1 [json_name="cause"];
+	optional int64 start_timestamp_ns = 2 [json_name="startTimestampNs"];
+	optional uint64 duration_ns = 3 [json_name="durationNs"];
+	optional bool did_switch = 4 [json_name="didSwitch"];
+	enum Cause {
+		UNKNOWN = 0;
+		BOOTING = 1;
+		STOWED = 2;
+		THERMAL_SHUTDOWN = 3;
+		NO_SCHEDULE = 4;
+		NO_SATS = 5;
+		OBSTRUCTED = 6;
+		NO_DOWNLINK = 7;
+		NO_PINGS = 8;
+		ACTUATOR_ACTIVITY = 9;
+		CABLE_TEST = 10;
+		SLEEPING = 11;
+		MOVING_WHILE_NOT_ALLOWED = 12;
+	}
 }
 
 message DishGetHistoryResponse {
@@ -35,17 +72,15 @@ message DishGetHistoryResponse {
 	repeated float pop_ping_latency_ms = 1002 [json_name="popPingLatencyMs"];
 	repeated float downlink_throughput_bps = 1003 [json_name="downlinkThroughputBps"];
 	repeated float uplink_throughput_bps = 1004 [json_name="uplinkThroughputBps"];
-	repeated float snr = 1005 [json_name="snr"];
-	repeated bool scheduled = 1006 [json_name="scheduled"];
-	repeated bool obstructed = 1007 [json_name="obstructed"];
+	repeated .SpaceX.API.Device.DishOutage outages = 1009 [json_name="outages"];
 }
 
 message DishGetStatusResponse {
 	optional .SpaceX.API.Device.DeviceInfo device_info = 1 [json_name="deviceInfo"];
 	optional .SpaceX.API.Device.DeviceState device_state = 2 [json_name="deviceState"];
-	optional .SpaceX.API.Device.DishState state = 1006 [json_name="state"];
 	optional .SpaceX.API.Device.DishAlerts alerts = 1005 [json_name="alerts"];
-	optional float snr = 1001 [json_name="snr"];
+	optional .SpaceX.API.Device.DishOutage outage = 1014 [json_name="outage"];
+	optional .SpaceX.API.Device.DishGpsStats gps_stats = 1015 [json_name="gpsStats"];
 	optional float seconds_to_first_nonempty_slot = 1002 [json_name="secondsToFirstNonemptySlot"];
 	optional float pop_ping_drop_rate = 1003 [json_name="popPingDropRate"];
 	optional float downlink_throughput_bps = 1007 [json_name="downlinkThroughputBps"];
@@ -53,6 +88,25 @@ message DishGetStatusResponse {
 	optional float pop_ping_latency_ms = 1009 [json_name="popPingLatencyMs"];
 	optional .SpaceX.API.Device.DishObstructionStats obstruction_stats = 1004 [json_name="obstructionStats"];
 	optional bool stow_requested = 1010 [json_name="stowRequested"];
+	optional float boresight_azimuth_deg = 1011 [json_name="boresightAzimuthDeg"];
+	optional float boresight_elevation_deg = 1012 [json_name="boresightElevationDeg"];
+	optional int32 eth_speed_mbps = 1016 [json_name="ethSpeedMbps"];
+	optional .SpaceX.API.Device.UserMobilityClass mobility_class = 1017 [json_name="mobilityClass"];
+	optional bool is_snr_above_noise_floor = 1018 [json_name="isSnrAboveNoiseFloor"];
+	optional .SpaceX.API.Device.DishReadyStates ready_states = 1019 [json_name="readyStates"];
+	optional .SpaceX.API.Device.UserClassOfService class_of_service = 1020 [json_name="classOfService"];
+	optional .SpaceX.API.Device.SoftwareUpdateState software_update_state = 1021 [json_name="softwareUpdateState"];
+	optional bool swupdate_reboot_ready = 1030 [json_name="swupdateRebootReady"];
+	optional .SpaceX.API.Device.SoftwareUpdateStats software_update_stats = 1026 [json_name="softwareUpdateStats"];
+	optional .SpaceX.API.Device.AlignmentStats alignment_stats = 1027 [json_name="alignmentStats"];
+	optional bool is_snr_persistently_low = 1022 [json_name="isSnrPersistentlyLow"];
+	optional .SpaceX.API.Device.HasActuators has_actuators = 1023 [json_name="hasActuators"];
+	optional .SpaceX.API.Satellites.Network.UtDisablementCode disablement_code = 1024 [json_name="disablementCode"];
+	optional bool has_signed_cals = 1025 [json_name="hasSignedCals"];
+	optional .SpaceX.API.Device.DishConfig config = 2000 [json_name="config"];
+	optional .SpaceX.API.Device.InitializationDurationSeconds initialization_duration_seconds = 1028 [json_name="initializationDurationSeconds"];
+	optional bool is_cell_disabled = 1029 [json_name="isCellDisabled"];
+	optional int32 seconds_until_swupdate_reboot_possible = 1031 [json_name="secondsUntilSwupdateRebootPossible"];
 }
 
 message DishGetObstructionMapRequest {
@@ -62,6 +116,8 @@ message DishGetObstructionMapResponse {
 	optional uint32 num_rows = 1 [json_name="numRows"];
 	optional uint32 num_cols = 2 [json_name="numCols"];
 	repeated float snr = 3 [json_name="snr"];
+	optional float min_elevation_deg = 4 [json_name="minElevationDeg"];
+	optional float max_theta_deg = 5 [json_name="maxThetaDeg"];
 }
 
 message DishAlerts {
@@ -71,19 +127,212 @@ message DishAlerts {
 	optional bool mast_not_near_vertical = 5 [json_name="mastNotNearVertical"];
 	optional bool unexpected_location = 4 [json_name="unexpectedLocation"];
 	optional bool slow_ethernet_speeds = 6 [json_name="slowEthernetSpeeds"];
+	optional bool slow_ethernet_speeds_100 = 18 [json_name="slowEthernetSpeeds100"];
+	optional bool roaming = 7 [json_name="roaming"];
+	optional bool install_pending = 8 [json_name="installPending"];
+	optional bool is_heating = 9 [json_name="isHeating"];
+	optional bool power_supply_thermal_throttle = 10 [json_name="powerSupplyThermalThrottle"];
+	optional bool is_power_save_idle = 11 [json_name="isPowerSaveIdle"];
+	optional bool moving_while_not_mobile = 12 [json_name="movingWhileNotMobile"];
+	optional bool moving_too_fast_for_policy = 15 [json_name="movingTooFastForPolicy"];
+	optional bool dbf_telem_stale = 14 [json_name="dbfTelemStale"];
+	optional bool low_motor_current = 16 [json_name="lowMotorCurrent"];
+	optional bool lower_signal_than_predicted = 17 [json_name="lowerSignalThanPredicted"];
+}
+
+message DishReadyStates {
+	optional bool cady = 1 [json_name="cady"];
+	optional bool scp = 2 [json_name="scp"];
+	optional bool l1l2 = 3 [json_name="l1l2"];
+	optional bool xphy = 4 [json_name="xphy"];
+	optional bool aap = 5 [json_name="aap"];
+	optional bool rf = 6 [json_name="rf"];
+}
+
+message DishGpsStats {
+	optional bool gps_valid = 1 [json_name="gpsValid"];
+	optional uint32 gps_sats = 2 [json_name="gpsSats"];
+	optional bool no_sats_after_ttff = 3 [json_name="noSatsAfterTtff"];
+	optional bool inhibit_gps = 4 [json_name="inhibitGps"];
+}
+
+message SoftwareUpdateStats {
+	optional .SpaceX.API.Device.SoftwareUpdateState software_update_state = 1 [json_name="softwareUpdateState"];
+	optional float software_update_progress = 2 [json_name="softwareUpdateProgress"];
+}
+
+message AlignmentStats {
+	optional .SpaceX.API.Device.HasActuators has_actuators = 1 [json_name="hasActuators"];
+	optional .SpaceX.API.Device.ActuatorState actuator_state = 2 [json_name="actuatorState"];
+	optional float tilt_angle_deg = 3 [json_name="tiltAngleDeg"];
+	optional float boresight_azimuth_deg = 4 [json_name="boresightAzimuthDeg"];
+	optional float boresight_elevation_deg = 5 [json_name="boresightElevationDeg"];
+	optional float desired_boresight_azimuth_deg = 8 [json_name="desiredBoresightAzimuthDeg"];
+	optional float desired_boresight_elevation_deg = 9 [json_name="desiredBoresightElevationDeg"];
+	optional .SpaceX.API.Device.AttitudeEstimationState attitude_estimation_state = 6 [json_name="attitudeEstimationState"];
+	optional float attitude_uncertainty_deg = 7 [json_name="attitudeUncertaintyDeg"];
 }
 
 message DishObstructionStats {
 	optional bool currently_obstructed = 5 [json_name="currentlyObstructed"];
 	optional float fraction_obstructed = 1 [json_name="fractionObstructed"];
-	optional float last_24h_obstructed_s = 1006 [json_name="last24hObstructedS"];
+	optional float time_obstructed = 9 [json_name="timeObstructed"];
 	optional float valid_s = 4 [json_name="validS"];
-	repeated float wedge_fraction_obstructed = 2 [json_name="wedgeFractionObstructed"];
-	repeated float wedge_abs_fraction_obstructed = 3 [json_name="wedgeAbsFractionObstructed"];
+	optional uint32 patches_valid = 10 [json_name="patchesValid"];
+	optional float avg_prolonged_obstruction_duration_s = 6 [json_name="avgProlongedObstructionDurationS"];
+	optional float avg_prolonged_obstruction_interval_s = 7 [json_name="avgProlongedObstructionIntervalS"];
+	optional bool avg_prolonged_obstruction_valid = 8 [json_name="avgProlongedObstructionValid"];
+}
+
+message InitializationDurationSeconds {
+	optional int32 attitude_initialization = 1 [json_name="attitudeInitialization"];
+	optional int32 burst_detected = 2 [json_name="burstDetected"];
+	optional int32 ekf_converged = 3 [json_name="ekfConverged"];
+	optional int32 first_cplane = 4 [json_name="firstCplane"];
+	optional int32 first_pop_ping = 5 [json_name="firstPopPing"];
+	optional int32 gps_valid = 6 [json_name="gpsValid"];
+	optional int32 initial_network_entry = 7 [json_name="initialNetworkEntry"];
+	optional int32 network_schedule = 8 [json_name="networkSchedule"];
+	optional int32 rf_ready = 9 [json_name="rfReady"];
+	optional int32 stable_connection = 10 [json_name="stableConnection"];
 }
 
 message DishAuthenticateResponse {
 	optional .SpaceX.API.Device.ChallengeResponse dish = 2 [json_name="dish"];
+}
+
+message SelfTestRequest {
+	optional bool detailed = 1 [json_name="detailed"];
+}
+
+message SelfTestResponse {
+	optional bool passed = 1 [json_name="passed"];
+	optional string report = 2 [json_name="report"];
+}
+
+message StartDishSelfTestRequest {
+}
+
+message StartDishSelfTestResponse {
+}
+
+message SetTestModeRequest {
+	optional .SpaceX.API.Device.SetTestModeRequest.RfMode rf_mode = 1 [json_name="rfMode"];
+	optional bool disable_loss_of_comm_fdir = 1001 [json_name="disableLossOfCommFdir"];
+	optional bool enable_rules_override = 1002 [json_name="enableRulesOverride"];
+	enum RfMode {
+		RX = 0;
+		IDLE = 1;
+		TX = 2;
+		CAL = 3;
+		USER = 4;
+		NORMAL = 420;
+	}
+}
+
+message SetTestModeResponse {
+}
+
+message DishSetConfigRequest {
+	optional .SpaceX.API.Device.DishConfig dish_config = 1 [json_name="dishConfig"];
+}
+
+message DishSetConfigResponse {
+	optional .SpaceX.API.Device.DishConfig updated_dish_config = 1 [json_name="updatedDishConfig"];
+}
+
+message DishGetConfigRequest {
+}
+
+message DishGetConfigResponse {
+	optional .SpaceX.API.Device.DishConfig dish_config = 1 [json_name="dishConfig"];
+}
+
+message DishInhibitGpsRequest {
+	optional bool inhibit_gps = 1 [json_name="inhibitGps"];
+}
+
+message DishInhibitGpsResponse {
+	optional bool inhibit_gps = 1 [json_name="inhibitGps"];
+}
+
+message DishGetDataRequest {
+	optional uint32 id = 1 [json_name="id"];
+}
+
+message DishClearObstructionMapRequest {
+}
+
+message DishClearObstructionMapResponse {
+}
+
+message DishActivateRssiScanRequest {
+	optional .SpaceX.API.Device.DishActivateRssiScan scan_query = 1 [json_name="scanQuery"];
+}
+
+message DishActivateRssiScanResponse {
+	optional bool success = 1 [json_name="success"];
+}
+
+message DishGetRssiScanResultRequest {
+}
+
+message DishGetRssiScanResultResponse {
+	optional .SpaceX.API.Device.DishGetRssiScanResult result = 1 [json_name="result"];
+}
+
+enum UserMobilityClass {
+	STATIONARY = 0;
+	NOMADIC = 1;
+	MOBILE = 2;
+}
+
+enum SoftwareUpdateState {
+	SOFTWARE_UPDATE_STATE_UNKNOWN = 0;
+	IDLE = 1;
+	FETCHING = 2;
+	PRE_CHECK = 3;
+	WRITING = 4;
+	POST_CHECK = 5;
+	REBOOT_REQUIRED = 6;
+	DISABLED = 7;
+	FAULTED = 8;
+}
+
+enum UserClassOfService {
+	UNKNOWN_USER_CLASS_OF_SERVICE = 0;
+	CONSUMER = 1;
+	BUSINESS = 2;
+	BUSINESS_PLUS = 3;
+	COMMERCIAL_AVIATION = 4;
+}
+
+enum HasActuators {
+	HAS_ACTUATORS_UNKNOWN = 0;
+	HAS_ACTUATORS_YES = 1;
+	HAS_ACTUATORS_NO = 2;
+}
+
+enum ActuatorState {
+	ACTUATOR_STATE_IDLE = 0;
+	ACTUATOR_STATE_FULL_TILT = 1;
+	ACTUATOR_STATE_ROTATE = 2;
+	ACTUATOR_STATE_TILT = 3;
+	ACTUATOR_STATE_UNWRAP_POSITIVE = 4;
+	ACTUATOR_STATE_UNWRAP_NEGATIVE = 5;
+	ACTUATOR_STATE_TILT_TO_STOWED = 6;
+	ACTUATOR_STATE_FAULTED = 7;
+	ACTUATOR_STATE_WAIT_TIL_STATIC = 8;
+	ACTUATOR_STATE_DRIVE_TO_MOBILE_POSITION = 9;
+	ACTUATOR_STATE_MOBILE_WAIT = 10;
+}
+
+enum AttitudeEstimationState {
+	FILTER_RESET = 0;
+	FILTER_UNCONVERGED = 1;
+	FILTER_CONVERGED = 2;
+	FILTER_FAULTED = 3;
+	FILTER_INVALID = 4;
 }
 
 enum DishState {
@@ -92,3 +341,4 @@ enum DishState {
 	SEARCHING = 2;
 	BOOTING = 3;
 }
+

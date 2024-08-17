@@ -1,0 +1,127 @@
+syntax = "proto3";
+
+package SpaceX.API.Device;
+
+option go_package = "spacex.com/api/device";
+
+message InflatedBasicServiceSet {
+	optional string bssid = 1 [json_name="bssid"];
+	optional string ssid = 2 [json_name="ssid"];
+	optional string mac_lan = 3 [json_name="macLan"];
+	optional string iface_name = 4 [json_name="ifaceName"];
+	optional .SpaceX.API.Device.IfaceType iface_type = 5 [json_name="ifaceType"];
+	optional uint32 channel = 6 [json_name="channel"];
+	optional uint32 preference = 7 [json_name="preference"];
+}
+
+message DhcpLease {
+	optional string ip_address = 1 [json_name="ipAddress"];
+	optional string mac_address = 2 [json_name="macAddress"];
+	optional string hostname = 3 [json_name="hostname"];
+	optional string expires_time = 4 [json_name="expiresTime"];
+	optional bool active = 5 [json_name="active"];
+	optional uint32 client_id = 6 [json_name="clientId"];
+}
+
+message DhcpServer {
+	optional string domain = 1 [json_name="domain"];
+	optional string subnet = 2 [json_name="subnet"];
+	repeated .SpaceX.API.Device.DhcpLease leases = 3 [json_name="leases"];
+}
+
+message RadiusStatsMap {
+	repeated .SpaceX.API.Device.RadiusStatsMap.RadiusStatsEntry radius_stats = 1 [json_name="radiusStats"];
+message RadiusStats {
+	optional string iface_name = 1 [json_name="ifaceName"];
+	optional uint32 timeout_count = 2 [json_name="timeoutCount"];
+	optional uint32 access_request_count = 3 [json_name="accessRequestCount"];
+	optional uint32 access_accept_count = 4 [json_name="accessAcceptCount"];
+	optional uint32 access_reject_count = 5 [json_name="accessRejectCount"];
+	optional uint32 access_challenge_count = 6 [json_name="accessChallengeCount"];
+	optional uint32 accounting_request_count = 7 [json_name="accountingRequestCount"];
+	optional uint32 accounting_response_count = 8 [json_name="accountingResponseCount"];
+}
+
+message RadiusStatsEntry {
+	optional string key = 1 [json_name="key"];
+	optional .SpaceX.API.Device.RadiusStatsMap.RadiusStats value = 2 [json_name="value"];
+}
+
+}
+
+message PoeStats {
+	optional .SpaceX.API.Device.PoeState poe_state = 1 [json_name="poeState"];
+	optional float poe_power = 2 [json_name="poePower"];
+	optional uint32 poe_faults_fast_overcurrent = 3 [json_name="poeFaultsFastOvercurrent"];
+	optional uint32 poe_faults_slow_overcurrent = 4 [json_name="poeFaultsSlowOvercurrent"];
+	optional uint32 poe_faults_overvoltage = 5 [json_name="poeFaultsOvervoltage"];
+	optional uint32 poe_faults_undervoltage = 6 [json_name="poeFaultsUndervoltage"];
+}
+
+enum IfaceType {
+	IFACE_TYPE_UNKNOWN = 0;
+	IFACE_TYPE_ETH = 1;
+	IFACE_TYPE_RF_2GHZ = 2;
+	IFACE_TYPE_RF_5GHZ = 5;
+	IFACE_TYPE_RF_5GHZ_HIGH = 6;
+}
+
+enum TxPowerLevel {
+	TX_POWER_LEVEL_100 = 0;
+	TX_POWER_LEVEL_80 = 1;
+	TX_POWER_LEVEL_50 = 2;
+	TX_POWER_LEVEL_25 = 3;
+	TX_POWER_LEVEL_12 = 4;
+	TX_POWER_LEVEL_6 = 5;
+}
+
+enum PoeState {
+	POE_STATE_DISABLED = 0;
+	POE_STATE_NEGOTIATING = 1;
+	POE_STATE_ON_RAMPUP = 2;
+	POE_STATE_ON = 3;
+	POE_STATE_WATER_DETECT_RAMPUP = 4;
+	POE_STATE_WATER_DETECT = 5;
+}
+
+enum PoeFault {
+	POE_FAULT_FAST_OVERCURRENT = 0;
+	POE_FAULT_SLOW_OVERCURRENT = 1;
+	POE_FAULT_UNDERCURRENT = 2;
+	POE_FAULT_OVERVOLTAGE = 3;
+	POE_FAULT_UNDERVOLTAGE = 4;
+}
+
+enum WifiMode {
+	WIFI_MODE_DEFAULT = 0;
+	A_ONLY = 1;
+	B_ONLY = 2;
+	G_ONLY = 3;
+	N_ONLY = 4;
+	B_G_MIXED = 5;
+	A_N_MIXED = 6;
+	G_N_MIXED = 7;
+	B_G_N_MIXED = 8;
+	A_AN_AC_MIXED = 9;
+	AN_AC_MIXED = 10;
+	B_G_N_AX_MIXED = 11;
+	A_AN_AC_AX_MIXED = 12;
+	A_N_AC_MIXED = 13;
+	A_N_AC_AX_MIXED = 14;
+}
+
+enum WifiSecurity {
+	WIFI_SECURITY_UNKNOWN = 0;
+	OPEN = 1;
+	WPA2 = 2;
+	WPA3 = 3;
+	WPA2WPA3 = 4;
+}
+
+enum Protocol {
+	TCP = 0;
+	UDP = 1;
+	TLS = 2;
+	DTLS = 3;
+}
+

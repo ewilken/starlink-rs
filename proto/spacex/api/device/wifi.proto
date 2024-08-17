@@ -4,8 +4,122 @@ package SpaceX.API.Device;
 
 option go_package = "spacex.com/api/device";
 
+import "google/protobuf/wrappers.proto";
 import "spacex/api/device/common.proto";
 import "spacex/api/device/wifi_config.proto";
+import "spacex/api/device/wifi_util.proto";
+import "spacex/api/telemetron/public/common/time.proto";
+
+message WifiClients {
+	repeated .SpaceX.API.Device.WifiClient clients = 1 [json_name="clients"];
+}
+
+message ToController {
+	optional int32 api_version = 4 [json_name="apiVersion"];
+	oneof message {
+		.SpaceX.API.Device.WifiClients clients = 1 [json_name="clients"];
+		.SpaceX.API.Device.WifiMeshJoin mesh_join = 2 [json_name="meshJoin"];
+		.SpaceX.API.Device.WifiMeshStatus status = 3 [json_name="status"];
+		.SpaceX.API.Device.MeshSpeedtest speedtest = 5 [json_name="speedtest"];
+	}
+}
+
+message WifiMeshJoin {
+	optional uint64 incarnation = 1 [json_name="incarnation"];
+	optional string hardware_version = 2 [json_name="hardwareVersion"];
+	optional bool supports_5ghz_high = 3 [json_name="supports5ghzHigh"];
+	repeated .SpaceX.API.Device.WifiSiteSurveyResult siteSurveyScan = 4 [json_name="siteSurveyScan"];
+}
+
+message WifiMeshStatus {
+	optional string software_version = 5 [json_name="softwareVersion"];
+	optional string mac_lan = 6 [json_name="macLan"];
+	repeated string source_mac_addresses = 7 [json_name="sourceMacAddresses"];
+	repeated .SpaceX.API.Device.WifiClient clients = 2 [json_name="clients"];
+	repeated .SpaceX.API.Device.InflatedBasicServiceSet bss_list = 3 [json_name="bssList"];
+	optional string hardware_version = 4 [json_name="hardwareVersion"];
+	optional string backhaul_bssid = 8 [json_name="backhaulBssid"];
+	optional uint32 backhaul_est_preference = 9 [json_name="backhaulEstPreference"];
+}
+
+message MeshSpeedtestRequest {
+}
+
+message MeshSpeedtest {
+	optional int64 upload_start_time = 1 [json_name="uploadStartTime"];
+	optional int64 download_start_time = 2 [json_name="downloadStartTime"];
+	optional float upload_mbps = 3 [json_name="uploadMbps"];
+	optional float download_mbps = 4 [json_name="downloadMbps"];
+}
+
+message WifiSiteSurveyResult {
+	optional float rssi = 1 [json_name="rssi"];
+	optional uint32 channel = 2 [json_name="channel"];
+	optional string ssid = 3 [json_name="ssid"];
+	optional .SpaceX.API.Device.WifiSecurity security = 4 [json_name="security"];
+	optional .SpaceX.API.Device.WifiMode wireless_mode = 5 [json_name="wirelessMode"];
+	optional .SpaceX.API.Device.IfaceType iface = 6 [json_name="iface"];
+	optional string mac_address = 7 [json_name="macAddress"];
+	optional float est_rx_rate = 8 [json_name="estRxRate"];
+}
+
+message WifiGlobalMeshStatus {
+	optional string hardware_version = 1 [json_name="hardwareVersion"];
+	optional string software_version = 2 [json_name="softwareVersion"];
+	repeated .SpaceX.API.Device.InflatedBasicServiceSet bss_list = 3 [json_name="bssList"];
+}
+
+message BackhaulRequest {
+	optional bool retry_backhaul = 1 [json_name="retryBackhaul"];
+	optional .SpaceX.API.Device.WifiConfig golden_bss = 2 [json_name="goldenBss"];
+}
+
+message FromController {
+	optional int32 api_version = 3 [json_name="apiVersion"];
+	oneof message {
+		.SpaceX.API.Device.WifiConfig wifi_config = 1 [json_name="wifiConfig"];
+		.SpaceX.API.Device.SteerClientRequest steer_client_request = 2 [json_name="steerClientRequest"];
+		.SpaceX.API.Device.WifiGlobalMeshStatus status = 4 [json_name="status"];
+		.SpaceX.API.Device.BackhaulRequest backhaul_request = 5 [json_name="backhaulRequest"];
+		.SpaceX.API.Device.MeshSpeedtestRequest start_speedtest = 6 [json_name="startSpeedtest"];
+		.SpaceX.API.Device.WifiBtmRequest wifi_btm_request = 7 [json_name="wifiBtmRequest"];
+	}
+}
+
+message SteerClientRequest {
+	optional string client_mac_addr = 1 [json_name="clientMacAddr"];
+	repeated .SpaceX.API.Device.SteerClientRequest.SteerTarget targets = 2 [json_name="targets"];
+message SteerTarget {
+	optional string bssid = 1 [json_name="bssid"];
+	optional int32 channel = 2 [json_name="channel"];
+}
+
+}
+
+message WifiBtmRequest {
+	optional uint32 bss_termination_duration_m = 5 [json_name="bssTerminationDurationM"];
+	optional string peer_bssid = 1 [json_name="peerBssid"];
+	repeated .SpaceX.API.Device.WifiBtmRequest.NeighborReport neighbor_report = 4 [json_name="neighborReport"];
+message NeighborReport {
+	optional string bssid = 1 [json_name="bssid"];
+	optional uint32 channel = 2 [json_name="channel"];
+}
+
+}
+
+message WifiSelfTest {
+	optional bool total_success = 1 [json_name="totalSuccess"];
+	optional .SpaceX.API.Device.WifiSelfTest.TestResult fused = 2 [json_name="fused"];
+	repeated .SpaceX.API.Device.WifiSelfTest.TestResult eth_phys = 3 [json_name="ethPhys"];
+	repeated .SpaceX.API.Device.WifiSelfTest.TestResult pcis = 4 [json_name="pcis"];
+	optional .SpaceX.API.Device.WifiSelfTest.TestResult bl2_prod = 5 [json_name="bl2Prod"];
+message TestResult {
+	optional string name = 1 [json_name="name"];
+	optional bool success = 2 [json_name="success"];
+	optional string failure_reason = 3 [json_name="failureReason"];
+}
+
+}
 
 message WifiSetConfigRequest {
 	optional .SpaceX.API.Device.WifiConfig wifi_config = 1 [json_name="wifiConfig"];
@@ -22,11 +136,52 @@ message WifiGetConfigResponse {
 	optional .SpaceX.API.Device.WifiConfig wifi_config = 1 [json_name="wifiConfig"];
 }
 
+message WifiSetMeshDeviceTrustRequest {
+	optional string device_id = 1 [json_name="deviceId"];
+	optional .SpaceX.API.Device.MeshAuth auth = 2 [json_name="auth"];
+}
+
+message WifiSetMeshDeviceTrustResponse {
+}
+
+message WifiSetMeshConfigRequest {
+	optional .SpaceX.API.Device.MeshConfig mesh_config = 1 [json_name="meshConfig"];
+	optional string device_id = 2 [json_name="deviceId"];
+}
+
+message WifiSetMeshConfigResponse {
+}
+
 message WifiGetClientsRequest {
 }
 
 message WifiGetClientsResponse {
 	repeated .SpaceX.API.Device.WifiClient clients = 1 [json_name="clients"];
+	optional bool has_client_index = 2 [json_name="hasClientIndex"];
+	optional int32 client_index = 3 [json_name="clientIndex"];
+}
+
+message WifiGetClientHistoryRequest {
+	optional string mac_address = 1 [json_name="macAddress"];
+	optional uint32 client_id = 2 [json_name="clientId"];
+}
+
+message WifiGetClientHistoryResponse {
+	optional uint64 current = 1 [json_name="current"];
+	repeated float tx_throughput_mbps = 2 [json_name="txThroughputMbps"];
+	repeated float rx_throughput_mbps = 3 [json_name="rxThroughputMbps"];
+	repeated .SpaceX.API.Device.WifiGetClientHistoryResponse.WifiLimitedReason throughput_limited = 4 [json_name="throughputLimited"];
+	repeated float rx_rate_mbps = 5 [json_name="rxRateMbps"];
+	optional bytes rssi = 6 [json_name="rssi"];
+	enum WifiLimitedReason {
+		LIMIT_UNKNOWN = 0;
+		LIMIT_NONE = 1;
+		LIMIT_UNCLASSIFIED = 2;
+		LIMIT_DROPPED_PACKETS = 3;
+	}
+}
+
+message WifiSetAviationConformedRequest {
 }
 
 message WifiGetHistoryResponse {
@@ -41,31 +196,110 @@ message WifiNewClientConnectedEvent {
 
 message WifiClient {
 	optional string name = 1 [json_name="name"];
+	optional string given_name = 31 [json_name="givenName"];
+	optional string domain = 22 [json_name="domain"];
 	optional string mac_address = 2 [json_name="macAddress"];
 	optional string ip_address = 3 [json_name="ipAddress"];
+	repeated string ipv6_addresses = 41 [json_name="ipv6Addresses"];
 	optional float signal_strength = 4 [json_name="signalStrength"];
+	optional uint32 channel_width = 12 [json_name="channelWidth"];
 	optional .SpaceX.API.Device.WifiClient.RxStats rx_stats = 5 [json_name="rxStats"];
 	optional .SpaceX.API.Device.WifiClient.TxStats tx_stats = 6 [json_name="txStats"];
 	optional uint32 associated_time_s = 7 [json_name="associatedTimeS"];
+	optional uint32 no_data_idle_s = 45 [json_name="noDataIdleS"];
 	optional string mode_str = 8 [json_name="modeStr"];
 	optional .SpaceX.API.Device.WifiClient.Interface iface = 9 [json_name="iface"];
+	optional string iface_name = 26 [json_name="ifaceName"];
 	optional float snr = 10 [json_name="snr"];
 	optional int32 psmode = 11 [json_name="psmode"];
-	message RxStats {
-		optional uint64 bytes = 1 [json_name="bytes"];
-		optional uint64 count_errors = 2 [json_name="countErrors"];
-		optional int32 nss = 3 [json_name="nss"];
-	}
-	message TxStats {
-		optional uint64 bytes = 1 [json_name="bytes"];
-		optional uint64 success_bytes = 2 [json_name="successBytes"];
-		optional int32 nss = 3 [json_name="nss"];
-	}
+	optional string upstream_mac_address = 13 [json_name="upstreamMacAddress"];
+	optional .SpaceX.API.Device.WifiClient.Role role = 14 [json_name="role"];
+	optional string device_id = 15 [json_name="deviceId"];
+	optional uint32 swq_checks = 16 [json_name="swqChecks"];
+	optional uint32 swq_checks_non_empty = 17 [json_name="swqChecksNonEmpty"];
+	optional uint32 mib_steer_state = 18 [json_name="mibSteerState"];
+	optional uint32 mib_steer_method = 19 [json_name="mibSteerMethod"];
+	optional uint32 btm_requests = 20 [json_name="btmRequests"];
+	optional uint32 btm_requests_success = 21 [json_name="btmRequestsSuccess"];
+	optional uint32 steer_state = 30 [json_name="steerState"];
+	optional uint32 steer_req_success_last_1h = 27 [json_name="steerReqSuccessLast1h"];
+	optional uint32 steer_req_fail_last_1h = 28 [json_name="steerReqFailLast1h"];
+	optional uint32 steer_req_fail_and_dissoc_last_1h = 29 [json_name="steerReqFailAndDissocLast1h"];
+	optional bool dot11v_support = 23 [json_name="dot11vSupport"];
+	optional uint32 hops_from_controller = 32 [json_name="hopsFromController"];
+	optional float est_tx_rate_mbps_from_controller = 33 [json_name="estTxRateMbpsFromController"];
+	optional float est_rx_rate_mbps_from_controller = 34 [json_name="estRxRateMbpsFromController"];
+	optional string hardware_version = 37 [json_name="hardwareVersion"];
+	optional string software_version = 38 [json_name="softwareVersion"];
+	optional uint32 api_version = 39 [json_name="apiVersion"];
+	optional .SpaceX.API.Device.WifiClient.PingMetrics ping_metrics = 40 [json_name="pingMetrics"];
+	optional bool blocked = 42 [json_name="blocked"];
+	optional uint32 client_id = 43 [json_name="clientId"];
+	optional .SpaceX.API.Device.WifiClient.FqcodelInfo fqcodel_info = 44 [json_name="fqcodelInfo"];
+message RxStats {
+	optional uint64 bytes = 1 [json_name="bytes"];
+	optional uint64 count_errors = 2 [json_name="countErrors"];
+	optional uint32 phy_mode = 13 [json_name="phyMode"];
+	optional int32 nss = 3 [json_name="nss"];
+	optional uint32 rate_mbps = 8 [json_name="rateMbps"];
+	optional float rate_mbps_last_30s = 14 [json_name="rateMbpsLast30s"];
+	optional float rate_mbps_last_15s = 15 [json_name="rateMbpsLast15s"];
+	optional uint32 mcs = 5 [json_name="mcs"];
+	optional uint32 bandwidth = 6 [json_name="bandwidth"];
+	optional uint32 guard_ns = 7 [json_name="guardNs"];
+	optional float airtime_fraction_last_1s = 9 [json_name="airtimeFractionLast1s"];
+	optional uint32 sampled_packets = 10 [json_name="sampledPackets"];
+	optional uint32 sampled_packets_retried = 11 [json_name="sampledPacketsRetried"];
+	optional uint32 sampled_packets_dropped = 12 [json_name="sampledPacketsDropped"];
+}
+
+message TxStats {
+	optional uint64 bytes = 1 [json_name="bytes"];
+	optional uint64 success_bytes = 2 [json_name="successBytes"];
+	optional uint32 phy_mode = 10 [json_name="phyMode"];
+	optional int32 nss = 3 [json_name="nss"];
+	optional uint32 rate_mbps = 8 [json_name="rateMbps"];
+	optional float rate_mbps_last_30s = 11 [json_name="rateMbpsLast30s"];
+	optional float rate_mbps_last_15s = 12 [json_name="rateMbpsLast15s"];
+	optional uint32 mcs = 5 [json_name="mcs"];
+	optional uint32 bandwidth = 6 [json_name="bandwidth"];
+	optional uint32 guard_ns = 7 [json_name="guardNs"];
+	optional float airtime_fraction_last_1s = 9 [json_name="airtimeFractionLast1s"];
+}
+
+message PingMetrics {
+	optional bool in_unhappy_hour_2s = 1 [json_name="inUnhappyHour2s"];
+	optional bool in_unhappy_hour_5s = 2 [json_name="inUnhappyHour5s"];
+	optional float drop_rate_5m = 3 [json_name="dropRate5m"];
+	optional float latency_5m = 4 [json_name="latency5m"];
+}
+
+message FqcodelInfo {
+	optional uint64 enqs_hi_prio = 1 [json_name="enqsHiPrio"];
+	optional uint64 enqs_fqcodel = 2 [json_name="enqsFqcodel"];
+	optional uint64 enqs_new = 3 [json_name="enqsNew"];
+	optional uint64 enqs_old = 4 [json_name="enqsOld"];
+	optional uint64 enqs_dropped = 5 [json_name="enqsDropped"];
+	optional uint64 deqs_new = 6 [json_name="deqsNew"];
+	optional uint64 deqs_old = 7 [json_name="deqsOld"];
+	optional uint64 deqs_flow_new = 8 [json_name="deqsFlowNew"];
+	optional uint64 deqs_flow_old_deficit = 9 [json_name="deqsFlowOldDeficit"];
+	optional uint64 deqs_flow_old_starvation = 10 [json_name="deqsFlowOldStarvation"];
+	optional uint64 deqs_dropped = 11 [json_name="deqsDropped"];
+}
+
 	enum Interface {
 		UNKNOWN = 0;
 		ETH = 1;
 		RF_2GHZ = 2;
 		RF_5GHZ = 3;
+		RF_5GHZ_HIGH = 4;
+	}
+	enum Role {
+		ROLE_UNKNOWN = 0;
+		CLIENT = 1;
+		REPEATER = 2;
+		CONTROLLER = 3;
 	}
 }
 
@@ -73,21 +307,68 @@ message WifiSetupRequest {
 	optional bool skip = 1 [json_name="skip"];
 	optional string network_name = 2 [json_name="networkName"];
 	optional string network_password = 3 [json_name="networkPassword"];
+	optional bool bypass = 4 [json_name="bypass"];
 }
 
 message WifiSetupResponse {
+}
+
+message WifiBandStatus {
+	optional float chan_busy_time_fraction = 1 [json_name="chanBusyTimeFraction"];
+	optional float tx_air_time_fraction = 2 [json_name="txAirTimeFraction"];
+	optional float rx_air_time_fraction = 3 [json_name="rxAirTimeFraction"];
+	optional float obss_air_time_fraction = 4 [json_name="obssAirTimeFraction"];
+	optional float edcca_air_time_fraction = 5 [json_name="edccaAirTimeFraction"];
+}
+
+message WifiAlerts {
+	optional bool thermal_throttle = 1 [json_name="thermalThrottle"];
+	optional bool install_pending = 2 [json_name="installPending"];
+	optional bool freshly_fused = 3 [json_name="freshlyFused"];
+	optional bool lan_eth_slow_link_10 = 4 [json_name="lanEthSlowLink10"];
+	optional bool lan_eth_slow_link_100 = 5 [json_name="lanEthSlowLink100"];
+	optional bool wan_eth_poor_connection = 10 [json_name="wanEthPoorConnection"];
+	optional bool mesh_topology_changing_often = 11 [json_name="meshTopologyChangingOften"];
+	optional bool mesh_unreliable_backhaul = 12 [json_name="meshUnreliableBackhaul"];
+	optional bool radius_missing_process = 13 [json_name="radiusMissingProcess"];
+	optional bool eth_switch_error = 14 [json_name="ethSwitchError"];
+	optional bool poe_on_dish_unreachable = 15 [json_name="poeOnDishUnreachable"];
+	optional bool poe_fuse_blown = 16 [json_name="poeFuseBlown"];
+	optional bool poe_router_overcurrent = 17 [json_name="poeRouterOvercurrent"];
+	optional bool poe_off_current_nominal = 18 [json_name="poeOffCurrentNominal"];
+	optional bool poe_vin_overvoltage = 19 [json_name="poeVinOvervoltage"];
+	optional bool poe_vin_undervoltage = 20 [json_name="poeVinUndervoltage"];
 }
 
 message WifiGetStatusResponse {
 	optional .SpaceX.API.Device.DeviceInfo device_info = 3 [json_name="deviceInfo"];
 	optional .SpaceX.API.Device.DeviceState device_state = 4 [json_name="deviceState"];
 	optional bool captive_portal_enabled = 1 [json_name="captivePortalEnabled"];
-	repeated .SpaceX.API.Device.WifiClient clients = 2 [json_name="clients"];
-	optional string serial_number = 1001 [json_name="serialNumber"];
-	optional string sku = 1002 [json_name="sku"];
 	optional string ipv4_wan_address = 1003 [json_name="ipv4WanAddress"];
+	repeated string ipv6_wan_addresses = 1017 [json_name="ipv6WanAddresses"];
 	optional float ping_drop_rate = 1004 [json_name="pingDropRate"];
+	optional float ping_drop_rate_5m = 1021 [json_name="pingDropRate5m"];
 	optional float ping_latency_ms = 1005 [json_name="pingLatencyMs"];
+	optional float dish_ping_drop_rate = 1012 [json_name="dishPingDropRate"];
+	optional float dish_ping_drop_rate_5m = 1018 [json_name="dishPingDropRate5m"];
+	optional float dish_ping_latency_ms = 1013 [json_name="dishPingLatencyMs"];
+	optional float pop_ping_drop_rate = 1014 [json_name="popPingDropRate"];
+	optional float pop_ping_drop_rate_5m = 1020 [json_name="popPingDropRate5m"];
+	optional float pop_ping_latency_ms = 1015 [json_name="popPingLatencyMs"];
+	optional .SpaceX.API.Device.WifiBandStatus rf_2ghz_status = 1008 [json_name="rf2ghzStatus"];
+	optional .SpaceX.API.Device.WifiBandStatus rf_5ghz_status = 1009 [json_name="rf5ghzStatus"];
+	optional .SpaceX.API.Device.WifiAlerts alerts = 1010 [json_name="alerts"];
+	optional bool is_aviation = 1011 [json_name="isAviation"];
+	optional .SpaceX.API.Device.WifiConfig config = 2000 [json_name="config"];
+	repeated .SpaceX.API.Device.WifiClient clients = 3000 [json_name="clients"];
+	optional bool has_client_index = 3001 [json_name="hasClientIndex"];
+	optional int32 client_index = 3002 [json_name="clientIndex"];
+	optional bool is_aviation_conformed = 1016 [json_name="isAviationConformed"];
+	optional .SpaceX.API.Device.RadiusStatsMap radius_stats = 3003 [json_name="radiusStats"];
+	repeated .SpaceX.API.Device.DhcpServer dhcp_servers = 1019 [json_name="dhcpServers"];
+	optional .SpaceX.API.Device.PoeStats poe_stats = 1022 [json_name="poeStats"];
+	optional string dish_id = 1023 [json_name="dishId"];
+	optional int64 utc_ns = 1024 [json_name="utcNs"];
 }
 
 message WifiAuthenticateRequest {
@@ -101,6 +382,12 @@ message WifiAuthenticateResponse {
 
 message WifiAccountBondingEvent {
 	optional string dish_id = 1 [json_name="dishId"];
+	optional bool is_repeater = 2 [json_name="isRepeater"];
+	optional string hardware_version = 3 [json_name="hardwareVersion"];
+}
+
+message WifiNewPeerEvent {
+	optional string peer_id = 1 [json_name="peerId"];
 }
 
 message PingMetrics {
@@ -132,34 +419,6 @@ message WifiGetPingMetricsResponse {
 	optional .SpaceX.API.Device.PingMetrics internet = 1 [json_name="internet"];
 }
 
-message WifiGetDiagnosticsRequest {
-}
-
-message WifiGetDiagnosticsResponse {
-	optional .SpaceX.API.Device.WifiScanResults network_scan = 1 [json_name="networkScan"];
-	repeated .SpaceX.API.Device.WifiNetwork wifi_networks = 2 [json_name="wifiNetworks"];
-}
-
-message WifiScanResults {
-	repeated .SpaceX.API.Device.WifiScanResults.Network networks = 1 [json_name="networks"];
-	message Network {
-		optional .SpaceX.API.Device.WifiScanResults.Network.Source source = 1 [json_name="source"];
-		optional string ssid = 2 [json_name="ssid"];
-		optional string bssid = 3 [json_name="bssid"];
-		optional string frequency_ghz = 4 [json_name="frequencyGhz"];
-		optional int32 channel = 5 [json_name="channel"];
-		optional int32 signal_level_dbm = 6 [json_name="signalLevelDbm"];
-		optional int32 noise_level_dbm = 7 [json_name="noiseLevelDbm"];
-		optional bool has_encryption_key = 8 [json_name="hasEncryptionKey"];
-		optional string phy_mode_str = 9 [json_name="phyModeStr"];
-		enum Source {
-			UNKNOWN = 0;
-			SCAN_2_4GHZ = 1;
-			SCAN_5GHZ = 2;
-		}
-	}
-}
-
 message WifiNetwork {
 	optional .SpaceX.API.Device.WifiNetwork.Band band = 1 [json_name="band"];
 	optional string ssid = 2 [json_name="ssid"];
@@ -171,3 +430,604 @@ message WifiNetwork {
 		WIFI_5GHZ = 2;
 	}
 }
+
+message WifiPersistentStats {
+	optional .SpaceX.API.Device.WifiPersistentStats.Event factory_reset_button = 1 [json_name="factoryResetButton"];
+	optional .SpaceX.API.Device.WifiPersistentStats.Event factory_reset_plug_unplug = 2 [json_name="factoryResetPlugUnplug"];
+	optional .SpaceX.API.Device.WifiPersistentStats.Event factory_reset_command = 3 [json_name="factoryResetCommand"];
+	optional .SpaceX.API.Device.WifiPersistentStats.Event factory_reset_failed_load_wifi_config = 4 [json_name="factoryResetFailedLoadWifiConfig"];
+	optional .SpaceX.API.Device.WifiPersistentStats.Event reboot_from_software_update = 5 [json_name="rebootFromSoftwareUpdate"];
+message Event {
+	optional uint32 count = 1 [json_name="count"];
+	optional int64 last_occurred_timestamp = 2 [json_name="lastOccurredTimestamp"];
+}
+
+}
+
+message WifiGetPersistentStatsResponse {
+	optional .SpaceX.API.Device.WifiPersistentStats stats = 1 [json_name="stats"];
+}
+
+message RadioStats {
+	optional .SpaceX.API.Device.WifiConfig.Band band = 1 [json_name="band"];
+	optional .SpaceX.API.Device.NetworkInterface.RxStats rx_stats = 2 [json_name="rxStats"];
+	optional .SpaceX.API.Device.NetworkInterface.TxStats tx_stats = 3 [json_name="txStats"];
+	optional .SpaceX.API.Device.RadioStats.ThermalStatus thermal_status = 4 [json_name="thermalStatus"];
+	optional .SpaceX.API.Device.RadioStats.AntennaStatus antenna_status = 5 [json_name="antennaStatus"];
+message ThermalStatus {
+	optional uint32 level = 1 [json_name="level"];
+	optional uint32 temp = 2 [json_name="temp"];
+	optional double temp2 = 3 [json_name="temp2"];
+	optional uint32 power_reduction = 4 [json_name="powerReduction"];
+	optional uint32 duty_cycle = 5 [json_name="dutyCycle"];
+}
+
+message AntennaStatus {
+	optional float rssi1 = 1 [json_name="rssi1"];
+	optional float rssi2 = 2 [json_name="rssi2"];
+	optional float rssi3 = 3 [json_name="rssi3"];
+	optional float rssi4 = 4 [json_name="rssi4"];
+}
+
+}
+
+message starlink_routers_hourly_metrics_v2 {
+	optional .google.protobuf.StringValue id = 1 [json_name="id"];
+	optional .google.protobuf.StringValue timestamp_date = 2 [json_name="timestampDate"];
+	optional .google.protobuf.UInt32Value timestamp_hour = 3 [json_name="timestampHour"];
+	optional .SpaceX.API.Telemetron.Public.Common.TimestampInfo timestamp = 10000 [json_name="timestamp"];
+	optional .google.protobuf.UInt32Value sys_hw_gen = 4 [json_name="sysHwGen"];
+	optional .google.protobuf.StringValue sys_sw = 5 [json_name="sysSw"];
+	optional .google.protobuf.StringValue sys_country = 6 [json_name="sysCountry"];
+	optional .google.protobuf.BoolValue sys_is_dev = 7 [json_name="sysIsDev"];
+	optional .google.protobuf.UInt32Value sys_alloc_fds = 8 [json_name="sysAllocFds"];
+	optional .google.protobuf.FloatValue sys_cpu_usage = 9 [json_name="sysCpuUsage"];
+	optional .google.protobuf.FloatValue sys_mem_free_kb = 10 [json_name="sysMemFreeKb"];
+	optional .google.protobuf.Int32Value sys_bootcount = 11 [json_name="sysBootcount"];
+	optional .google.protobuf.BoolValue sys_partitions_equal = 12 [json_name="sysPartitionsEqual"];
+	optional .google.protobuf.UInt32Value sys_uptime_seconds = 13 [json_name="sysUptimeSeconds"];
+	optional .google.protobuf.Int32Value sys_anti_rollback_version = 14 [json_name="sysAntiRollbackVersion"];
+	optional .google.protobuf.BoolValue sys_is_witl = 15 [json_name="sysIsWitl"];
+	optional .google.protobuf.BoolValue sys_is_aviation_conformed = 16 [json_name="sysIsAviationConformed"];
+	optional .google.protobuf.UInt32Value sys_ubi_max_ec = 17 [json_name="sysUbiMaxEc"];
+	optional .google.protobuf.UInt32Value sys_ubi_bad_peb = 18 [json_name="sysUbiBadPeb"];
+	optional .google.protobuf.UInt32Value sys_board_rev = 19 [json_name="sysBoardRev"];
+	optional .google.protobuf.UInt32Value radios_2ghz_channel = 100 [json_name="radios2ghzChannel"];
+	optional .google.protobuf.FloatValue radios_2ghz_antenna1_rssi = 101 [json_name="radios2ghzAntenna1Rssi"];
+	optional .google.protobuf.FloatValue radios_2ghz_antenna2_rssi = 102 [json_name="radios2ghzAntenna2Rssi"];
+	optional .google.protobuf.FloatValue radios_2ghz_antenna3_rssi = 103 [json_name="radios2ghzAntenna3Rssi"];
+	optional .google.protobuf.FloatValue radios_2ghz_antenna4_rssi = 197 [json_name="radios2ghzAntenna4Rssi"];
+	optional .google.protobuf.FloatValue radios_2ghz_antenna1_tssi = 157 [json_name="radios2ghzAntenna1Tssi"];
+	optional .google.protobuf.FloatValue radios_2ghz_antenna2_tssi = 158 [json_name="radios2ghzAntenna2Tssi"];
+	optional .google.protobuf.FloatValue radios_2ghz_antenna3_tssi = 159 [json_name="radios2ghzAntenna3Tssi"];
+	optional .google.protobuf.FloatValue radios_2ghz_antenna4_tssi = 160 [json_name="radios2ghzAntenna4Tssi"];
+	optional .google.protobuf.UInt32Value radios_2ghz_iface_count = 104 [json_name="radios2ghzIfaceCount"];
+	optional .google.protobuf.FloatValue radios_2ghz_chan_busy_fraction = 105 [json_name="radios2ghzChanBusyFraction"];
+	optional .google.protobuf.FloatValue radios_2ghz_edcca_fraction = 106 [json_name="radios2ghzEdccaFraction"];
+	optional .google.protobuf.FloatValue radios_2ghz_overlapping_bss_fraction = 107 [json_name="radios2ghzOverlappingBssFraction"];
+	optional .google.protobuf.Int64Value radios_2ghz_rx_bytes = 108 [json_name="radios2ghzRxBytes"];
+	optional .google.protobuf.Int64Value radios_2ghz_rx_packets = 109 [json_name="radios2ghzRxPackets"];
+	optional .google.protobuf.Int64Value radios_2ghz_rx_errors = 110 [json_name="radios2ghzRxErrors"];
+	optional .google.protobuf.Int64Value radios_2ghz_rx_frame_errors = 111 [json_name="radios2ghzRxFrameErrors"];
+	optional .google.protobuf.FloatValue radios_2ghz_rx_packet_error_rate = 112 [json_name="radios2ghzRxPacketErrorRate"];
+	optional .google.protobuf.FloatValue radios_2ghz_rx_airtime_fraction = 113 [json_name="radios2ghzRxAirtimeFraction"];
+	optional .google.protobuf.Int64Value radios_2ghz_tx_bytes = 114 [json_name="radios2ghzTxBytes"];
+	optional .google.protobuf.Int64Value radios_2ghz_tx_packets = 115 [json_name="radios2ghzTxPackets"];
+	optional .google.protobuf.Int64Value radios_2ghz_tx_errors = 116 [json_name="radios2ghzTxErrors"];
+	optional .google.protobuf.FloatValue radios_2ghz_tx_packet_error_rate = 117 [json_name="radios2ghzTxPacketErrorRate"];
+	optional .google.protobuf.FloatValue radios_2ghz_tx_airtime_fraction = 118 [json_name="radios2ghzTxAirtimeFraction"];
+	optional .google.protobuf.UInt32Value radios_5ghz_channel = 119 [json_name="radios5ghzChannel"];
+	optional .google.protobuf.FloatValue radios_5ghz_antenna1_rssi = 120 [json_name="radios5ghzAntenna1Rssi"];
+	optional .google.protobuf.FloatValue radios_5ghz_antenna2_rssi = 121 [json_name="radios5ghzAntenna2Rssi"];
+	optional .google.protobuf.FloatValue radios_5ghz_antenna3_rssi = 122 [json_name="radios5ghzAntenna3Rssi"];
+	optional .google.protobuf.FloatValue radios_5ghz_antenna4_rssi = 198 [json_name="radios5ghzAntenna4Rssi"];
+	optional .google.protobuf.FloatValue radios_5ghz_antenna1_tssi = 161 [json_name="radios5ghzAntenna1Tssi"];
+	optional .google.protobuf.FloatValue radios_5ghz_antenna2_tssi = 162 [json_name="radios5ghzAntenna2Tssi"];
+	optional .google.protobuf.FloatValue radios_5ghz_antenna3_tssi = 163 [json_name="radios5ghzAntenna3Tssi"];
+	optional .google.protobuf.FloatValue radios_5ghz_antenna4_tssi = 164 [json_name="radios5ghzAntenna4Tssi"];
+	optional .google.protobuf.UInt32Value radios_5ghz_iface_count = 123 [json_name="radios5ghzIfaceCount"];
+	optional .google.protobuf.FloatValue radios_5ghz_chan_busy_fraction = 124 [json_name="radios5ghzChanBusyFraction"];
+	optional .google.protobuf.FloatValue radios_5ghz_edcca_fraction = 125 [json_name="radios5ghzEdccaFraction"];
+	optional .google.protobuf.FloatValue radios_5ghz_overlapping_bss_fraction = 126 [json_name="radios5ghzOverlappingBssFraction"];
+	optional .google.protobuf.Int64Value radios_5ghz_rx_bytes = 127 [json_name="radios5ghzRxBytes"];
+	optional .google.protobuf.Int64Value radios_5ghz_rx_packets = 128 [json_name="radios5ghzRxPackets"];
+	optional .google.protobuf.Int64Value radios_5ghz_rx_errors = 129 [json_name="radios5ghzRxErrors"];
+	optional .google.protobuf.Int64Value radios_5ghz_rx_frame_errors = 130 [json_name="radios5ghzRxFrameErrors"];
+	optional .google.protobuf.FloatValue radios_5ghz_rx_packet_error_rate = 131 [json_name="radios5ghzRxPacketErrorRate"];
+	optional .google.protobuf.FloatValue radios_5ghz_rx_airtime_fraction = 132 [json_name="radios5ghzRxAirtimeFraction"];
+	optional .google.protobuf.Int64Value radios_5ghz_tx_bytes = 133 [json_name="radios5ghzTxBytes"];
+	optional .google.protobuf.Int64Value radios_5ghz_tx_packets = 134 [json_name="radios5ghzTxPackets"];
+	optional .google.protobuf.Int64Value radios_5ghz_tx_errors = 135 [json_name="radios5ghzTxErrors"];
+	optional .google.protobuf.FloatValue radios_5ghz_tx_packet_error_rate = 136 [json_name="radios5ghzTxPacketErrorRate"];
+	optional .google.protobuf.FloatValue radios_5ghz_tx_airtime_fraction = 137 [json_name="radios5ghzTxAirtimeFraction"];
+	optional .google.protobuf.UInt32Value radios_5ghz_high_channel = 138 [json_name="radios5ghzHighChannel"];
+	optional .google.protobuf.FloatValue radios_5ghz_high_antenna1_rssi = 139 [json_name="radios5ghzHighAntenna1Rssi"];
+	optional .google.protobuf.FloatValue radios_5ghz_high_antenna2_rssi = 140 [json_name="radios5ghzHighAntenna2Rssi"];
+	optional .google.protobuf.FloatValue radios_5ghz_high_antenna3_rssi = 141 [json_name="radios5ghzHighAntenna3Rssi"];
+	optional .google.protobuf.FloatValue radios_5ghz_high_antenna4_rssi = 199 [json_name="radios5ghzHighAntenna4Rssi"];
+	optional .google.protobuf.FloatValue radios_5ghz_high_antenna1_tssi = 165 [json_name="radios5ghzHighAntenna1Tssi"];
+	optional .google.protobuf.FloatValue radios_5ghz_high_antenna2_tssi = 166 [json_name="radios5ghzHighAntenna2Tssi"];
+	optional .google.protobuf.FloatValue radios_5ghz_high_antenna3_tssi = 167 [json_name="radios5ghzHighAntenna3Tssi"];
+	optional .google.protobuf.FloatValue radios_5ghz_high_antenna4_tssi = 168 [json_name="radios5ghzHighAntenna4Tssi"];
+	optional .google.protobuf.UInt32Value radios_5ghz_high_iface_count = 142 [json_name="radios5ghzHighIfaceCount"];
+	optional .google.protobuf.FloatValue radios_5ghz_high_chan_busy_fraction = 143 [json_name="radios5ghzHighChanBusyFraction"];
+	optional .google.protobuf.FloatValue radios_5ghz_high_edcca_fraction = 144 [json_name="radios5ghzHighEdccaFraction"];
+	optional .google.protobuf.FloatValue radios_5ghz_high_overlapping_bss_fraction = 145 [json_name="radios5ghzHighOverlappingBssFraction"];
+	optional .google.protobuf.Int64Value radios_5ghz_high_rx_bytes = 146 [json_name="radios5ghzHighRxBytes"];
+	optional .google.protobuf.Int64Value radios_5ghz_high_rx_packets = 147 [json_name="radios5ghzHighRxPackets"];
+	optional .google.protobuf.Int64Value radios_5ghz_high_rx_errors = 148 [json_name="radios5ghzHighRxErrors"];
+	optional .google.protobuf.Int64Value radios_5ghz_high_rx_frame_errors = 149 [json_name="radios5ghzHighRxFrameErrors"];
+	optional .google.protobuf.FloatValue radios_5ghz_high_rx_packet_error_rate = 150 [json_name="radios5ghzHighRxPacketErrorRate"];
+	optional .google.protobuf.FloatValue radios_5ghz_high_rx_airtime_fraction = 151 [json_name="radios5ghzHighRxAirtimeFraction"];
+	optional .google.protobuf.Int64Value radios_5ghz_high_tx_bytes = 152 [json_name="radios5ghzHighTxBytes"];
+	optional .google.protobuf.Int64Value radios_5ghz_high_tx_packets = 153 [json_name="radios5ghzHighTxPackets"];
+	optional .google.protobuf.Int64Value radios_5ghz_high_tx_errors = 154 [json_name="radios5ghzHighTxErrors"];
+	optional .google.protobuf.FloatValue radios_5ghz_high_tx_packet_error_rate = 155 [json_name="radios5ghzHighTxPacketErrorRate"];
+	optional .google.protobuf.FloatValue radios_5ghz_high_tx_airtime_fraction = 156 [json_name="radios5ghzHighTxAirtimeFraction"];
+	optional .google.protobuf.FloatValue radios_2ghz_thermal_temp = 200 [json_name="radios2ghzThermalTemp"];
+	optional .google.protobuf.FloatValue radios_5ghz_thermal_temp = 201 [json_name="radios5ghzThermalTemp"];
+	optional .google.protobuf.FloatValue radios_5ghz_high_thermal_temp = 206 [json_name="radios5ghzHighThermalTemp"];
+	optional .google.protobuf.FloatValue radios_2ghz_thermal_duty_cycle = 202 [json_name="radios2ghzThermalDutyCycle"];
+	optional .google.protobuf.FloatValue radios_5ghz_thermal_duty_cycle = 203 [json_name="radios5ghzThermalDutyCycle"];
+	optional .google.protobuf.FloatValue radios_5ghz_high_thermal_duty_cycle = 207 [json_name="radios5ghzHighThermalDutyCycle"];
+	optional .google.protobuf.UInt32Value radios_2ghz_thermal_throttled_seconds = 204 [json_name="radios2ghzThermalThrottledSeconds"];
+	optional .google.protobuf.UInt32Value radios_5ghz_thermal_throttled_seconds = 205 [json_name="radios5ghzThermalThrottledSeconds"];
+	optional .google.protobuf.UInt32Value radios_5ghz_high_thermal_throttled_seconds = 208 [json_name="radios5ghzHighThermalThrottledSeconds"];
+	optional .google.protobuf.FloatValue board_temp = 210 [json_name="boardTemp"];
+	optional .google.protobuf.FloatValue poe_mcu_die_temp = 211 [json_name="poeMcuDieTemp"];
+	optional .google.protobuf.Int64Value ifaces_lan_eth_rx_bytes = 300 [json_name="ifacesLanEthRxBytes"];
+	optional .google.protobuf.Int64Value ifaces_lan_eth_rx_packets = 301 [json_name="ifacesLanEthRxPackets"];
+	optional .google.protobuf.Int64Value ifaces_lan_eth_rx_errors = 302 [json_name="ifacesLanEthRxErrors"];
+	optional .google.protobuf.Int64Value ifaces_lan_eth_rx_frame_errors = 303 [json_name="ifacesLanEthRxFrameErrors"];
+	optional .google.protobuf.Int64Value ifaces_lan_eth_tx_bytes = 304 [json_name="ifacesLanEthTxBytes"];
+	optional .google.protobuf.Int64Value ifaces_lan_eth_tx_packets = 305 [json_name="ifacesLanEthTxPackets"];
+	optional .google.protobuf.Int64Value ifaces_lan_eth_tx_errors = 306 [json_name="ifacesLanEthTxErrors"];
+	optional .google.protobuf.Int64Value ifaces_lan1_eth_rx_bytes = 314 [json_name="ifacesLan1EthRxBytes"];
+	optional .google.protobuf.Int64Value ifaces_lan1_eth_rx_packets = 315 [json_name="ifacesLan1EthRxPackets"];
+	optional .google.protobuf.Int64Value ifaces_lan1_eth_rx_errors = 316 [json_name="ifacesLan1EthRxErrors"];
+	optional .google.protobuf.Int64Value ifaces_lan1_eth_rx_frame_errors = 317 [json_name="ifacesLan1EthRxFrameErrors"];
+	optional .google.protobuf.Int64Value ifaces_lan1_eth_tx_bytes = 318 [json_name="ifacesLan1EthTxBytes"];
+	optional .google.protobuf.Int64Value ifaces_lan1_eth_tx_packets = 319 [json_name="ifacesLan1EthTxPackets"];
+	optional .google.protobuf.Int64Value ifaces_lan1_eth_tx_errors = 320 [json_name="ifacesLan1EthTxErrors"];
+	optional .google.protobuf.Int64Value ifaces_wan_eth_rx_bytes = 307 [json_name="ifacesWanEthRxBytes"];
+	optional .google.protobuf.Int64Value ifaces_wan_eth_rx_packets = 308 [json_name="ifacesWanEthRxPackets"];
+	optional .google.protobuf.Int64Value ifaces_wan_eth_rx_errors = 309 [json_name="ifacesWanEthRxErrors"];
+	optional .google.protobuf.Int64Value ifaces_wan_eth_rx_frame_errors = 310 [json_name="ifacesWanEthRxFrameErrors"];
+	optional .google.protobuf.Int64Value ifaces_wan_eth_tx_bytes = 311 [json_name="ifacesWanEthTxBytes"];
+	optional .google.protobuf.Int64Value ifaces_wan_eth_tx_packets = 312 [json_name="ifacesWanEthTxPackets"];
+	optional .google.protobuf.Int64Value ifaces_wan_eth_tx_errors = 313 [json_name="ifacesWanEthTxErrors"];
+	optional .google.protobuf.UInt32Value clients = 400 [json_name="clients"];
+	optional .google.protobuf.UInt32Value clients_2ghz = 401 [json_name="clients2ghz"];
+	optional .google.protobuf.UInt32Value clients_5ghz = 402 [json_name="clients5ghz"];
+	optional .google.protobuf.UInt32Value clients_5ghz_high = 413 [json_name="clients5ghzHigh"];
+	optional .google.protobuf.UInt32Value clients_eth = 403 [json_name="clientsEth"];
+	optional .google.protobuf.UInt32Value clients_5ghz_rx_bandwidth_20mhz = 429 [json_name="clients5ghzRxBandwidth20mhz"];
+	optional .google.protobuf.UInt32Value clients_5ghz_rx_bandwidth_40mhz = 430 [json_name="clients5ghzRxBandwidth40mhz"];
+	optional .google.protobuf.UInt32Value clients_5ghz_rx_bandwidth_80mhz = 431 [json_name="clients5ghzRxBandwidth80mhz"];
+	optional .google.protobuf.UInt32Value clients_repeater = 404 [json_name="clientsRepeater"];
+	optional .google.protobuf.UInt32Value clients_repeater_2ghz = 405 [json_name="clientsRepeater2ghz"];
+	optional .google.protobuf.UInt32Value clients_repeater_5ghz = 406 [json_name="clientsRepeater5ghz"];
+	optional .google.protobuf.UInt32Value clients_repeater_5ghz_high = 416 [json_name="clientsRepeater5ghzHigh"];
+	optional .google.protobuf.UInt32Value clients_repeater_eth = 407 [json_name="clientsRepeaterEth"];
+	optional .google.protobuf.UInt32Value mesh_hops = 408 [json_name="meshHops"];
+	optional .google.protobuf.FloatValue mesh_one_hop_rssi_avg_2ghz = 409 [json_name="meshOneHopRssiAvg2ghz"];
+	optional .google.protobuf.FloatValue mesh_one_hop_rssi_avg_5ghz = 410 [json_name="meshOneHopRssiAvg5ghz"];
+	optional .google.protobuf.FloatValue mesh_one_hop_rssi_avg_5ghz_high = 414 [json_name="meshOneHopRssiAvg5ghzHigh"];
+	optional .google.protobuf.FloatValue mesh_two_hop_rssi_avg_2ghz = 411 [json_name="meshTwoHopRssiAvg2ghz"];
+	optional .google.protobuf.FloatValue mesh_two_hop_rssi_avg_5ghz = 412 [json_name="meshTwoHopRssiAvg5ghz"];
+	optional .google.protobuf.FloatValue mesh_two_hop_rssi_avg_5ghz_high = 415 [json_name="meshTwoHopRssiAvg5ghzHigh"];
+	optional .google.protobuf.FloatValue repeater_tx_rate_mbps_min = 418 [json_name="repeaterTxRateMbpsMin"];
+	optional .google.protobuf.FloatValue repeater_rx_rate_mbps_min = 419 [json_name="repeaterRxRateMbpsMin"];
+	optional .google.protobuf.FloatValue repeater_tx_rate_mbps_avg = 420 [json_name="repeaterTxRateMbpsAvg"];
+	optional .google.protobuf.FloatValue repeater_rx_rate_mbps_avg = 421 [json_name="repeaterRxRateMbpsAvg"];
+	optional .google.protobuf.FloatValue repeater_seconds_since_2s_outage_min = 422 [json_name="repeaterSecondsSince2sOutageMin"];
+	optional .google.protobuf.FloatValue repeater_seconds_since_5s_outage_min = 424 [json_name="repeaterSecondsSince5sOutageMin"];
+	optional .google.protobuf.FloatValue repeater_seconds_since_2s_outage_avg = 423 [json_name="repeaterSecondsSince2sOutageAvg"];
+	optional .google.protobuf.FloatValue repeater_seconds_since_5s_outage_avg = 425 [json_name="repeaterSecondsSince5sOutageAvg"];
+	optional .google.protobuf.FloatValue repeater_latency_ms_1h_max = 426 [json_name="repeaterLatencyMs1hMax"];
+	optional .google.protobuf.FloatValue repeater_latency_ms_1h_avg = 427 [json_name="repeaterLatencyMs1hAvg"];
+	optional .google.protobuf.UInt32Value mesh_topology_change_count_1d = 428 [json_name="meshTopologyChangeCount1d"];
+	optional .google.protobuf.FloatValue ping_seconds_since_last_1s_outage = 600 [json_name="pingSecondsSinceLast1sOutage"];
+	optional .google.protobuf.FloatValue ping_seconds_since_last_2s_outage = 601 [json_name="pingSecondsSinceLast2sOutage"];
+	optional .google.protobuf.FloatValue ping_seconds_since_last_5s_outage = 602 [json_name="pingSecondsSinceLast5sOutage"];
+	optional .google.protobuf.FloatValue ping_seconds_since_last_60s_outage = 603 [json_name="pingSecondsSinceLast60sOutage"];
+	optional .google.protobuf.FloatValue ping_seconds_since_last_300s_outage = 604 [json_name="pingSecondsSinceLast300sOutage"];
+	optional .google.protobuf.FloatValue ping_drop_rate = 605 [json_name="pingDropRate"];
+	optional .google.protobuf.FloatValue ping_drop_rate_last_1h = 606 [json_name="pingDropRateLast1h"];
+	optional .google.protobuf.FloatValue ping_latency = 607 [json_name="pingLatency"];
+	optional .google.protobuf.FloatValue ping_latency_last_1h = 618 [json_name="pingLatencyLast1h"];
+	optional .google.protobuf.FloatValue ping_dish_seconds_since_last_1s_outage = 610 [json_name="pingDishSecondsSinceLast1sOutage"];
+	optional .google.protobuf.FloatValue ping_dish_seconds_since_last_2s_outage = 611 [json_name="pingDishSecondsSinceLast2sOutage"];
+	optional .google.protobuf.FloatValue ping_dish_seconds_since_last_5s_outage = 612 [json_name="pingDishSecondsSinceLast5sOutage"];
+	optional .google.protobuf.FloatValue ping_dish_seconds_since_last_60s_outage = 613 [json_name="pingDishSecondsSinceLast60sOutage"];
+	optional .google.protobuf.FloatValue ping_dish_seconds_since_last_300s_outage = 614 [json_name="pingDishSecondsSinceLast300sOutage"];
+	optional .google.protobuf.FloatValue ping_dish_drop_rate = 615 [json_name="pingDishDropRate"];
+	optional .google.protobuf.FloatValue ping_dish_drop_rate_last_1h = 616 [json_name="pingDishDropRateLast1h"];
+	optional .google.protobuf.FloatValue ping_dish_latency = 617 [json_name="pingDishLatency"];
+	optional .google.protobuf.FloatValue ping_dish_latency_last_1h = 619 [json_name="pingDishLatencyLast1h"];
+	optional .google.protobuf.FloatValue client_speedtest_router_download_mbps = 700 [json_name="clientSpeedtestRouterDownloadMbps"];
+	optional .google.protobuf.FloatValue client_speedtest_router_upload_mbps = 701 [json_name="clientSpeedtestRouterUploadMbps"];
+	optional .google.protobuf.FloatValue client_speedtest_router_rssi = 702 [json_name="clientSpeedtestRouterRssi"];
+	optional .google.protobuf.FloatValue client_speedtest_wifi_download_mbps = 703 [json_name="clientSpeedtestWifiDownloadMbps"];
+	optional .google.protobuf.FloatValue client_speedtest_wifi_upload_mbps = 704 [json_name="clientSpeedtestWifiUploadMbps"];
+	optional .google.protobuf.FloatValue client_speedtest_client_download_mbps = 705 [json_name="clientSpeedtestClientDownloadMbps"];
+	optional .google.protobuf.FloatValue client_speedtest_client_upload_mbps = 706 [json_name="clientSpeedtestClientUploadMbps"];
+	optional .google.protobuf.FloatValue client_speedtest_client_rssi = 707 [json_name="clientSpeedtestClientRssi"];
+	optional .google.protobuf.UInt32Value client_speedtest_client_iface = 708 [json_name="clientSpeedtestClientIface"];
+	optional .google.protobuf.StringValue client_speedtest_client_oui = 709 [json_name="clientSpeedtestClientOui"];
+	optional .google.protobuf.UInt32Value client_speedtest_client_tx_rate = 710 [json_name="clientSpeedtestClientTxRate"];
+	optional .google.protobuf.UInt32Value client_speedtest_client_rx_rate = 711 [json_name="clientSpeedtestClientRxRate"];
+	optional .google.protobuf.UInt32Value client_speedtest_client_platform_type = 712 [json_name="clientSpeedtestClientPlatformType"];
+	optional .google.protobuf.FloatValue speedtest_tcp_8_download_mbps_avg = 800 [json_name="speedtestTcp8DownloadMbpsAvg"];
+	optional .google.protobuf.FloatValue speedtest_tcp_8_download_mbps_max = 801 [json_name="speedtestTcp8DownloadMbpsMax"];
+	optional .google.protobuf.FloatValue speedtest_tcp_8_upload_mbps_avg = 802 [json_name="speedtestTcp8UploadMbpsAvg"];
+	optional .google.protobuf.FloatValue speedtest_tcp_8_upload_mbps_max = 803 [json_name="speedtestTcp8UploadMbpsMax"];
+	optional .google.protobuf.FloatValue speedtest_tcp_64_download_mbps_avg = 804 [json_name="speedtestTcp64DownloadMbpsAvg"];
+	optional .google.protobuf.FloatValue speedtest_tcp_64_download_mbps_max = 805 [json_name="speedtestTcp64DownloadMbpsMax"];
+	optional .google.protobuf.FloatValue speedtest_tcp_64_upload_mbps_avg = 806 [json_name="speedtestTcp64UploadMbpsAvg"];
+	optional .google.protobuf.FloatValue speedtest_tcp_64_upload_mbps_max = 807 [json_name="speedtestTcp64UploadMbpsMax"];
+	optional .google.protobuf.UInt32Value dish_cell_id = 900 [json_name="dishCellId"];
+	optional .google.protobuf.BoolValue config_setup_complete = 1000 [json_name="configSetupComplete"];
+	optional .google.protobuf.BoolValue config_bands_split = 1001 [json_name="configBandsSplit"];
+	optional .google.protobuf.BoolValue config_is_repeater = 1002 [json_name="configIsRepeater"];
+	optional .google.protobuf.BoolValue config_open_network = 1003 [json_name="configOpenNetwork"];
+	optional .google.protobuf.BoolValue config_is_aviation = 1004 [json_name="configIsAviation"];
+	optional .google.protobuf.BoolValue config_secure_dns = 1005 [json_name="configSecureDns"];
+	optional .google.protobuf.BoolValue config_legacy = 1006 [json_name="configLegacy"];
+	optional .google.protobuf.BoolValue config_ap_mode = 1007 [json_name="configApMode"];
+	optional .google.protobuf.BoolValue config_dfs_enabled = 1008 [json_name="configDfsEnabled"];
+	optional .google.protobuf.BoolValue config_network_name_is_default = 1009 [json_name="configNetworkNameIsDefault"];
+	optional .google.protobuf.BoolValue config_remote_ssh_enabled = 1010 [json_name="configRemoteSshEnabled"];
+	optional .google.protobuf.BoolValue config_is_repeater_wired = 1011 [json_name="configIsRepeaterWired"];
+	optional .google.protobuf.BoolValue config_is_repeater_wireless = 1012 [json_name="configIsRepeaterWireless"];
+	optional .google.protobuf.UInt32Value config_block_schedules_set = 1013 [json_name="configBlockSchedulesSet"];
+	optional .google.protobuf.BoolValue config_custom_nameservers = 1014 [json_name="configCustomNameservers"];
+	optional .google.protobuf.BoolValue config_disable_mesh_onboarding = 1015 [json_name="configDisableMeshOnboarding"];
+	optional .google.protobuf.BoolValue config_pin_country_code = 1016 [json_name="configPinCountryCode"];
+	optional .google.protobuf.BoolValue config_disable_update_reboot = 1017 [json_name="configDisableUpdateReboot"];
+	optional .google.protobuf.BoolValue config_disable_2ghz = 1018 [json_name="configDisable2ghz"];
+	optional .google.protobuf.BoolValue config_disable_5ghz = 1019 [json_name="configDisable5ghz"];
+	optional .google.protobuf.BoolValue config_disable_5ghz_high = 1029 [json_name="configDisable5ghzHigh"];
+	optional .google.protobuf.UInt32Value config_channel_2ghz = 1020 [json_name="configChannel2ghz"];
+	optional .google.protobuf.UInt32Value config_channel_5ghz = 1021 [json_name="configChannel5ghz"];
+	optional .google.protobuf.UInt32Value config_channel_5ghz_high = 1022 [json_name="configChannel5ghzHigh"];
+	optional .google.protobuf.UInt32Value config_networks = 1023 [json_name="configNetworks"];
+	optional .google.protobuf.UInt32Value config_networks_guest = 1024 [json_name="configNetworksGuest"];
+	optional .google.protobuf.UInt32Value config_networks_hidden = 1025 [json_name="configNetworksHidden"];
+	optional .google.protobuf.UInt32Value config_networks_client_isolation = 1026 [json_name="configNetworksClientIsolation"];
+	optional .google.protobuf.UInt32Value config_networks_bands_split = 1027 [json_name="configNetworksBandsSplit"];
+	optional .google.protobuf.Int64Value wan_traffic_control_cake_bytes = 1101 [json_name="wanTrafficControlCakeBytes"];
+	optional .google.protobuf.Int64Value wan_traffic_control_cake_packets = 1102 [json_name="wanTrafficControlCakePackets"];
+	optional .google.protobuf.Int64Value wan_traffic_control_cake_drops = 1103 [json_name="wanTrafficControlCakeDrops"];
+	optional .google.protobuf.Int64Value wan_traffic_control_cake_ack_drops = 1104 [json_name="wanTrafficControlCakeAckDrops"];
+	optional .google.protobuf.UInt32Value conntrack_entries = 1100 [json_name="conntrackEntries"];
+}
+
+message starlink_router_alerts {
+	optional string name = 1 [json_name="name"];
+	optional string source = 2 [json_name="source"];
+	optional bool active = 3 [json_name="active"];
+	optional .SpaceX.API.Telemetron.Public.Common.TimestampInfo start = 4 [json_name="start"];
+	optional .SpaceX.API.Telemetron.Public.Common.TimestampInfo end = 5 [json_name="end"];
+}
+
+message starlink_router_client_speedtests {
+	optional string id = 1 [json_name="id"];
+	optional .SpaceX.API.Telemetron.Public.Common.TimestampInfo data_record = 2 [json_name="dataRecord"];
+	optional string country = 3 [json_name="country"];
+	optional .google.protobuf.StringValue speedtest_id = 30 [json_name="speedtestId"];
+	optional .google.protobuf.FloatValue client_rssi = 8 [json_name="clientRssi"];
+	optional .google.protobuf.FloatValue router_rssi = 9 [json_name="routerRssi"];
+	optional .google.protobuf.UInt32Value client_iface = 10 [json_name="clientIface"];
+	optional .google.protobuf.StringValue client_oui = 11 [json_name="clientOui"];
+	optional .google.protobuf.UInt32Value client_tx_rate = 12 [json_name="clientTxRate"];
+	optional .google.protobuf.UInt32Value client_rx_rate = 13 [json_name="clientRxRate"];
+	optional .google.protobuf.StringValue client_platform_type = 27 [json_name="clientPlatformType"];
+	optional .google.protobuf.StringValue client_app_version = 34 [json_name="clientAppVersion"];
+	optional .google.protobuf.UInt32Value client_app_build = 35 [json_name="clientAppBuild"];
+	optional .google.protobuf.UInt32Value client_rx_phy_mode = 31 [json_name="clientRxPhyMode"];
+	optional .google.protobuf.UInt32Value client_rx_spatial_streams = 32 [json_name="clientRxSpatialStreams"];
+	optional .google.protobuf.UInt32Value client_rx_mcs = 33 [json_name="clientRxMcs"];
+	optional .SpaceX.API.Telemetron.Public.Common.TimestampInfo client_download_start_time = 4 [json_name="clientDownloadStartTime"];
+	optional .SpaceX.API.Telemetron.Public.Common.TimestampInfo client_upload_start_time = 5 [json_name="clientUploadStartTime"];
+	optional .google.protobuf.FloatValue client_download_mbps_avg = 6 [json_name="clientDownloadMbpsAvg"];
+	optional .google.protobuf.FloatValue client_upload_mbps_avg = 7 [json_name="clientUploadMbpsAvg"];
+	optional .google.protobuf.StringValue client_target = 28 [json_name="clientTarget"];
+	optional .google.protobuf.UInt32Value client_tcp_streams = 16 [json_name="clientTcpStreams"];
+	optional .SpaceX.API.Telemetron.Public.Common.TimestampInfo router_download_start_time = 17 [json_name="routerDownloadStartTime"];
+	optional .SpaceX.API.Telemetron.Public.Common.TimestampInfo router_upload_start_time = 18 [json_name="routerUploadStartTime"];
+	optional .google.protobuf.FloatValue router_download_mbps_avg = 19 [json_name="routerDownloadMbpsAvg"];
+	optional .google.protobuf.FloatValue router_upload_mbps_avg = 20 [json_name="routerUploadMbpsAvg"];
+	optional .google.protobuf.StringValue router_target = 29 [json_name="routerTarget"];
+	optional .google.protobuf.UInt32Value router_tcp_streams = 22 [json_name="routerTcpStreams"];
+	optional .SpaceX.API.Telemetron.Public.Common.TimestampInfo wifi_download_start_time = 23 [json_name="wifiDownloadStartTime"];
+	optional .SpaceX.API.Telemetron.Public.Common.TimestampInfo wifi_upload_start_time = 24 [json_name="wifiUploadStartTime"];
+	optional .google.protobuf.FloatValue wifi_download_mbps_avg = 25 [json_name="wifiDownloadMbpsAvg"];
+	optional .google.protobuf.FloatValue wifi_upload_mbps_avg = 26 [json_name="wifiUploadMbpsAvg"];
+}
+
+message StarlinkRouterClients {
+	optional string router_id = 1 [json_name="routerId"];
+	optional .SpaceX.API.Telemetron.Public.Common.TimestampInfo timestamp = 2 [json_name="timestamp"];
+	optional uint32 client_id = 3 [json_name="clientId"];
+	optional .google.protobuf.StringValue router_hw = 119 [json_name="routerHw"];
+	optional .google.protobuf.StringValue router_sw = 120 [json_name="routerSw"];
+	optional .google.protobuf.StringValue client_router_id = 121 [json_name="clientRouterId"];
+	optional .google.protobuf.StringValue client_hw = 122 [json_name="clientHw"];
+	optional .google.protobuf.StringValue client_sw = 123 [json_name="clientSw"];
+	optional .google.protobuf.StringValue oui = 101 [json_name="oui"];
+	optional .google.protobuf.StringValue upstream_id = 102 [json_name="upstreamId"];
+	optional .google.protobuf.BoolValue is_repeater = 103 [json_name="isRepeater"];
+	optional .google.protobuf.UInt32Value connected_s = 104 [json_name="connectedS"];
+	optional .google.protobuf.StringValue interface = 105 [json_name="interface"];
+	optional .google.protobuf.UInt32Value radio_channel = 106 [json_name="radioChannel"];
+	optional .google.protobuf.FloatValue rssi = 107 [json_name="rssi"];
+	optional .google.protobuf.UInt32Value rx_mcs = 108 [json_name="rxMcs"];
+	optional .google.protobuf.UInt32Value tx_mcs = 109 [json_name="txMcs"];
+	optional .google.protobuf.UInt32Value rx_rate = 110 [json_name="rxRate"];
+	optional .google.protobuf.UInt32Value tx_rate = 111 [json_name="txRate"];
+	optional .google.protobuf.UInt32Value rx_bandwidth = 112 [json_name="rxBandwidth"];
+	optional .google.protobuf.UInt32Value rx_spatial_streams = 113 [json_name="rxSpatialStreams"];
+	optional .google.protobuf.UInt32Value rx_phy_mode = 114 [json_name="rxPhyMode"];
+	optional .google.protobuf.UInt32Value mesh_hops = 118 [json_name="meshHops"];
+	optional .google.protobuf.FloatValue speedtest_upload_mbps = 124 [json_name="speedtestUploadMbps"];
+	optional .google.protobuf.FloatValue speedtest_download_mbps = 125 [json_name="speedtestDownloadMbps"];
+	optional .google.protobuf.FloatValue site_survey_rssi = 127 [json_name="siteSurveyRssi"];
+	optional .google.protobuf.FloatValue site_survey_est_rx_rate = 128 [json_name="siteSurveyEstRxRate"];
+	optional .google.protobuf.UInt32Value est_controller_throughput_mbps = 129 [json_name="estControllerThroughputMbps"];
+	optional .google.protobuf.FloatValue ping_drop_rate_last_1h = 115 [json_name="pingDropRateLast1h"];
+	optional .google.protobuf.FloatValue ping_latency_last_1h = 116 [json_name="pingLatencyLast1h"];
+	optional .google.protobuf.StringValue steer_state = 117 [json_name="steerState"];
+	optional .google.protobuf.BoolValue blocked = 126 [json_name="blocked"];
+}
+
+message WifiSetClientGivenNameRequest {
+	optional .SpaceX.API.Device.ClientName client_name = 1 [json_name="clientName"];
+	optional .SpaceX.API.Device.ClientConfig client_config = 2 [json_name="clientConfig"];
+}
+
+message WifiSelfTestRequest {
+}
+
+message WifiSelfTestResponse {
+	optional .SpaceX.API.Device.WifiSelfTest self_test = 1 [json_name="selfTest"];
+	optional string json = 2 [json_name="json"];
+}
+
+message WifiRunSelfTestRequest {
+}
+
+message WifiRfTestRequest {
+	optional uint32 num_measurements = 1 [json_name="numMeasurements"];
+	optional uint32 channel_2ghz = 2 [json_name="channel2ghz"];
+	optional uint32 channel_5ghz = 3 [json_name="channel5ghz"];
+	optional uint32 channel_5ghz_high = 4 [json_name="channel5ghzHigh"];
+	optional uint32 mcs_2ghz = 5 [json_name="mcs2ghz"];
+	optional uint32 mcs_5ghz = 6 [json_name="mcs5ghz"];
+	optional uint32 mcs_5ghz_high = 7 [json_name="mcs5ghzHigh"];
+	optional uint32 phy_mode_2ghz = 8 [json_name="phyMode2ghz"];
+	optional uint32 phy_mode_5ghz = 9 [json_name="phyMode5ghz"];
+	optional uint32 phy_mode_5ghz_high = 10 [json_name="phyMode5ghzHigh"];
+}
+
+message WifiRfTestResponse {
+	optional string report = 1 [json_name="report"];
+}
+
+message WifiGetFirewallRequest {
+}
+
+message WifiGetFirewallResponse {
+	optional string iptables = 1 [json_name="iptables"];
+	optional string iptables_6 = 2 [json_name="iptables6"];
+}
+
+message WifiTogglePoeNegotiationRequest {
+	optional bool enable = 1 [json_name="enable"];
+}
+
+message WifiCalibrationModeRequest {
+}
+
+message starlink_router_hourly_metrics_v2 {
+	optional .google.protobuf.StringValue id = 1 [json_name="id"];
+	optional .google.protobuf.StringValue timestamp_date = 2 [json_name="timestampDate"];
+	optional .google.protobuf.UInt32Value timestamp_hour = 3 [json_name="timestampHour"];
+	optional .google.protobuf.UInt32Value sys_hw_gen = 4 [json_name="sysHwGen"];
+	optional .google.protobuf.StringValue sys_sw = 5 [json_name="sysSw"];
+	optional .google.protobuf.StringValue sys_country = 6 [json_name="sysCountry"];
+	optional .google.protobuf.BoolValue sys_is_dev = 7 [json_name="sysIsDev"];
+	optional .google.protobuf.UInt32Value sys_alloc_fds = 8 [json_name="sysAllocFds"];
+	optional .google.protobuf.FloatValue sys_cpu_usage = 9 [json_name="sysCpuUsage"];
+	optional .google.protobuf.FloatValue sys_mem_free_kb = 10 [json_name="sysMemFreeKb"];
+	optional .google.protobuf.Int32Value sys_bootcount = 11 [json_name="sysBootcount"];
+	optional .google.protobuf.BoolValue sys_partitions_equal = 12 [json_name="sysPartitionsEqual"];
+	optional .google.protobuf.UInt32Value sys_uptime_seconds = 13 [json_name="sysUptimeSeconds"];
+	optional .google.protobuf.Int32Value sys_anti_rollback_version = 14 [json_name="sysAntiRollbackVersion"];
+	optional .google.protobuf.UInt32Value radios_2ghz_channel = 100 [json_name="radios2ghzChannel"];
+	optional .google.protobuf.FloatValue radios_2ghz_antenna1_rssi = 101 [json_name="radios2ghzAntenna1Rssi"];
+	optional .google.protobuf.FloatValue radios_2ghz_antenna2_rssi = 102 [json_name="radios2ghzAntenna2Rssi"];
+	optional .google.protobuf.FloatValue radios_2ghz_antenna3_rssi = 103 [json_name="radios2ghzAntenna3Rssi"];
+	optional .google.protobuf.UInt32Value radios_2ghz_iface_count = 104 [json_name="radios2ghzIfaceCount"];
+	optional .google.protobuf.FloatValue radios_2ghz_chan_busy_fraction = 105 [json_name="radios2ghzChanBusyFraction"];
+	optional .google.protobuf.FloatValue radios_2ghz_edcca_fraction = 106 [json_name="radios2ghzEdccaFraction"];
+	optional .google.protobuf.FloatValue radios_2ghz_overlapping_bss_fraction = 107 [json_name="radios2ghzOverlappingBssFraction"];
+	optional .google.protobuf.UInt32Value radios_2ghz_rx_bytes = 108 [json_name="radios2ghzRxBytes"];
+	optional .google.protobuf.UInt32Value radios_2ghz_rx_packets = 109 [json_name="radios2ghzRxPackets"];
+	optional .google.protobuf.UInt32Value radios_2ghz_rx_errors = 110 [json_name="radios2ghzRxErrors"];
+	optional .google.protobuf.UInt32Value radios_2ghz_rx_frame_errors = 111 [json_name="radios2ghzRxFrameErrors"];
+	optional .google.protobuf.FloatValue radios_2ghz_rx_packet_error_rate = 112 [json_name="radios2ghzRxPacketErrorRate"];
+	optional .google.protobuf.FloatValue radios_2ghz_rx_airtime_fraction = 113 [json_name="radios2ghzRxAirtimeFraction"];
+	optional .google.protobuf.UInt32Value radios_2ghz_tx_bytes = 114 [json_name="radios2ghzTxBytes"];
+	optional .google.protobuf.UInt32Value radios_2ghz_tx_packets = 115 [json_name="radios2ghzTxPackets"];
+	optional .google.protobuf.UInt32Value radios_2ghz_tx_errors = 116 [json_name="radios2ghzTxErrors"];
+	optional .google.protobuf.FloatValue radios_2ghz_tx_packet_error_rate = 117 [json_name="radios2ghzTxPacketErrorRate"];
+	optional .google.protobuf.FloatValue radios_2ghz_tx_airtime_fraction = 118 [json_name="radios2ghzTxAirtimeFraction"];
+	optional .google.protobuf.UInt32Value radios_5ghz_channel = 119 [json_name="radios5ghzChannel"];
+	optional .google.protobuf.FloatValue radios_5ghz_antenna1_rssi = 120 [json_name="radios5ghzAntenna1Rssi"];
+	optional .google.protobuf.FloatValue radios_5ghz_antenna2_rssi = 121 [json_name="radios5ghzAntenna2Rssi"];
+	optional .google.protobuf.FloatValue radios_5ghz_antenna3_rssi = 122 [json_name="radios5ghzAntenna3Rssi"];
+	optional .google.protobuf.UInt32Value radios_5ghz_iface_count = 123 [json_name="radios5ghzIfaceCount"];
+	optional .google.protobuf.FloatValue radios_5ghz_chan_busy_fraction = 124 [json_name="radios5ghzChanBusyFraction"];
+	optional .google.protobuf.FloatValue radios_5ghz_edcca_fraction = 125 [json_name="radios5ghzEdccaFraction"];
+	optional .google.protobuf.FloatValue radios_5ghz_overlapping_bss_fraction = 126 [json_name="radios5ghzOverlappingBssFraction"];
+	optional .google.protobuf.UInt32Value radios_5ghz_rx_bytes = 127 [json_name="radios5ghzRxBytes"];
+	optional .google.protobuf.UInt32Value radios_5ghz_rx_packets = 128 [json_name="radios5ghzRxPackets"];
+	optional .google.protobuf.UInt32Value radios_5ghz_rx_errors = 129 [json_name="radios5ghzRxErrors"];
+	optional .google.protobuf.UInt32Value radios_5ghz_rx_frame_errors = 130 [json_name="radios5ghzRxFrameErrors"];
+	optional .google.protobuf.FloatValue radios_5ghz_rx_packet_error_rate = 131 [json_name="radios5ghzRxPacketErrorRate"];
+	optional .google.protobuf.FloatValue radios_5ghz_rx_airtime_fraction = 132 [json_name="radios5ghzRxAirtimeFraction"];
+	optional .google.protobuf.UInt32Value radios_5ghz_tx_bytes = 133 [json_name="radios5ghzTxBytes"];
+	optional .google.protobuf.UInt32Value radios_5ghz_tx_packets = 134 [json_name="radios5ghzTxPackets"];
+	optional .google.protobuf.UInt32Value radios_5ghz_tx_errors = 135 [json_name="radios5ghzTxErrors"];
+	optional .google.protobuf.FloatValue radios_5ghz_tx_packet_error_rate = 136 [json_name="radios5ghzTxPacketErrorRate"];
+	optional .google.protobuf.FloatValue radios_5ghz_tx_airtime_fraction = 137 [json_name="radios5ghzTxAirtimeFraction"];
+	optional .google.protobuf.FloatValue radios_2ghz_thermal_temp = 200 [json_name="radios2ghzThermalTemp"];
+	optional .google.protobuf.FloatValue radios_5ghz_thermal_temp = 201 [json_name="radios5ghzThermalTemp"];
+	optional .google.protobuf.FloatValue radios_2ghz_thermal_duty_cycle = 202 [json_name="radios2ghzThermalDutyCycle"];
+	optional .google.protobuf.FloatValue radios_5ghz_thermal_duty_cycle = 203 [json_name="radios5ghzThermalDutyCycle"];
+	optional .google.protobuf.UInt32Value radios_2ghz_thermal_throttled_seconds = 204 [json_name="radios2ghzThermalThrottledSeconds"];
+	optional .google.protobuf.UInt32Value radios_5ghz_thermal_throttled_seconds = 205 [json_name="radios5ghzThermalThrottledSeconds"];
+	optional .google.protobuf.UInt32Value ifaces_lan_eth_rx_bytes = 300 [json_name="ifacesLanEthRxBytes"];
+	optional .google.protobuf.UInt32Value ifaces_lan_eth_rx_packets = 301 [json_name="ifacesLanEthRxPackets"];
+	optional .google.protobuf.UInt32Value ifaces_lan_eth_rx_errors = 302 [json_name="ifacesLanEthRxErrors"];
+	optional .google.protobuf.UInt32Value ifaces_lan_eth_rx_frame_errors = 303 [json_name="ifacesLanEthRxFrameErrors"];
+	optional .google.protobuf.UInt32Value ifaces_lan_eth_tx_bytes = 304 [json_name="ifacesLanEthTxBytes"];
+	optional .google.protobuf.UInt32Value ifaces_lan_eth_tx_packets = 305 [json_name="ifacesLanEthTxPackets"];
+	optional .google.protobuf.UInt32Value ifaces_lan_eth_tx_errors = 306 [json_name="ifacesLanEthTxErrors"];
+	optional .google.protobuf.UInt32Value ifaces_wan_eth_rx_bytes = 307 [json_name="ifacesWanEthRxBytes"];
+	optional .google.protobuf.UInt32Value ifaces_wan_eth_rx_packets = 308 [json_name="ifacesWanEthRxPackets"];
+	optional .google.protobuf.UInt32Value ifaces_wan_eth_rx_errors = 309 [json_name="ifacesWanEthRxErrors"];
+	optional .google.protobuf.UInt32Value ifaces_wan_eth_rx_frame_errors = 310 [json_name="ifacesWanEthRxFrameErrors"];
+	optional .google.protobuf.UInt32Value ifaces_wan_eth_tx_bytes = 311 [json_name="ifacesWanEthTxBytes"];
+	optional .google.protobuf.UInt32Value ifaces_wan_eth_tx_packets = 312 [json_name="ifacesWanEthTxPackets"];
+	optional .google.protobuf.UInt32Value ifaces_wan_eth_tx_errors = 313 [json_name="ifacesWanEthTxErrors"];
+	optional .google.protobuf.UInt32Value clients = 400 [json_name="clients"];
+	optional .google.protobuf.UInt32Value clients_2ghz = 401 [json_name="clients2ghz"];
+	optional .google.protobuf.UInt32Value clients_5ghz = 402 [json_name="clients5ghz"];
+	optional .google.protobuf.UInt32Value clients_eth = 403 [json_name="clientsEth"];
+	optional .google.protobuf.UInt32Value clients_repeater = 404 [json_name="clientsRepeater"];
+	optional .google.protobuf.UInt32Value clients_repeater_2ghz = 405 [json_name="clientsRepeater2ghz"];
+	optional .google.protobuf.UInt32Value clients_repeater_5ghz = 406 [json_name="clientsRepeater5ghz"];
+	optional .google.protobuf.UInt32Value clients_repeater_eth = 407 [json_name="clientsRepeaterEth"];
+	optional .google.protobuf.UInt32Value mesh_hops = 408 [json_name="meshHops"];
+	optional .google.protobuf.FloatValue mesh_one_hop_rssi_avg_2ghz = 409 [json_name="meshOneHopRssiAvg2ghz"];
+	optional .google.protobuf.FloatValue mesh_one_hop_rssi_avg_5ghz = 410 [json_name="meshOneHopRssiAvg5ghz"];
+	optional .google.protobuf.FloatValue mesh_two_hop_rssi_avg_2ghz = 411 [json_name="meshTwoHopRssiAvg2ghz"];
+	optional .google.protobuf.FloatValue mesh_two_hop_rssi_avg_5ghz = 412 [json_name="meshTwoHopRssiAvg5ghz"];
+	optional .google.protobuf.FloatValue ping_seconds_since_last_1s_outage = 600 [json_name="pingSecondsSinceLast1sOutage"];
+	optional .google.protobuf.FloatValue ping_seconds_since_last_2s_outage = 601 [json_name="pingSecondsSinceLast2sOutage"];
+	optional .google.protobuf.FloatValue ping_seconds_since_last_5s_outage = 602 [json_name="pingSecondsSinceLast5sOutage"];
+	optional .google.protobuf.FloatValue ping_seconds_since_last_60s_outage = 603 [json_name="pingSecondsSinceLast60sOutage"];
+	optional .google.protobuf.FloatValue ping_seconds_since_last_300s_outage = 604 [json_name="pingSecondsSinceLast300sOutage"];
+	optional .google.protobuf.FloatValue ping_drop_rate = 605 [json_name="pingDropRate"];
+	optional .google.protobuf.FloatValue ping_drop_rate_last_1h = 606 [json_name="pingDropRateLast1h"];
+	optional .google.protobuf.FloatValue ping_latency = 607 [json_name="pingLatency"];
+	optional .google.protobuf.FloatValue ping_dish_seconds_since_last_1s_outage = 610 [json_name="pingDishSecondsSinceLast1sOutage"];
+	optional .google.protobuf.FloatValue ping_dish_seconds_since_last_2s_outage = 611 [json_name="pingDishSecondsSinceLast2sOutage"];
+	optional .google.protobuf.FloatValue ping_dish_seconds_since_last_5s_outage = 612 [json_name="pingDishSecondsSinceLast5sOutage"];
+	optional .google.protobuf.FloatValue ping_dish_seconds_since_last_60s_outage = 613 [json_name="pingDishSecondsSinceLast60sOutage"];
+	optional .google.protobuf.FloatValue ping_dish_seconds_since_last_300s_outage = 614 [json_name="pingDishSecondsSinceLast300sOutage"];
+	optional .google.protobuf.FloatValue ping_dish_drop_rate = 615 [json_name="pingDishDropRate"];
+	optional .google.protobuf.FloatValue ping_dish_drop_rate_last_1h = 616 [json_name="pingDishDropRateLast1h"];
+	optional .google.protobuf.FloatValue ping_dish_latency = 617 [json_name="pingDishLatency"];
+	optional .google.protobuf.FloatValue client_speedtest_router_download_mbps = 700 [json_name="clientSpeedtestRouterDownloadMbps"];
+	optional .google.protobuf.FloatValue client_speedtest_router_upload_mbps = 701 [json_name="clientSpeedtestRouterUploadMbps"];
+	optional .google.protobuf.FloatValue client_speedtest_router_rssi = 702 [json_name="clientSpeedtestRouterRssi"];
+	optional .google.protobuf.FloatValue client_speedtest_wifi_download_mbps = 703 [json_name="clientSpeedtestWifiDownloadMbps"];
+	optional .google.protobuf.FloatValue client_speedtest_wifi_upload_mbps = 704 [json_name="clientSpeedtestWifiUploadMbps"];
+	optional .google.protobuf.FloatValue client_speedtest_client_download_mbps = 705 [json_name="clientSpeedtestClientDownloadMbps"];
+	optional .google.protobuf.FloatValue client_speedtest_client_upload_mbps = 706 [json_name="clientSpeedtestClientUploadMbps"];
+	optional .google.protobuf.FloatValue client_speedtest_client_rssi = 707 [json_name="clientSpeedtestClientRssi"];
+	optional .google.protobuf.UInt32Value client_speedtest_client_iface = 708 [json_name="clientSpeedtestClientIface"];
+	optional .google.protobuf.StringValue client_speedtest_client_oui = 709 [json_name="clientSpeedtestClientOui"];
+	optional .google.protobuf.UInt32Value client_speedtest_client_tx_rate = 710 [json_name="clientSpeedtestClientTxRate"];
+	optional .google.protobuf.UInt32Value client_speedtest_client_rx_rate = 711 [json_name="clientSpeedtestClientRxRate"];
+	optional .google.protobuf.UInt32Value client_speedtest_client_platform_type = 712 [json_name="clientSpeedtestClientPlatformType"];
+	optional .google.protobuf.FloatValue speedtest_tcp_8_download_mbps_avg = 800 [json_name="speedtestTcp8DownloadMbpsAvg"];
+	optional .google.protobuf.FloatValue speedtest_tcp_8_download_mbps_max = 801 [json_name="speedtestTcp8DownloadMbpsMax"];
+	optional .google.protobuf.FloatValue speedtest_tcp_8_upload_mbps_avg = 802 [json_name="speedtestTcp8UploadMbpsAvg"];
+	optional .google.protobuf.FloatValue speedtest_tcp_8_upload_mbps_max = 803 [json_name="speedtestTcp8UploadMbpsMax"];
+	optional .google.protobuf.FloatValue speedtest_tcp_64_download_mbps_avg = 804 [json_name="speedtestTcp64DownloadMbpsAvg"];
+	optional .google.protobuf.FloatValue speedtest_tcp_64_download_mbps_max = 805 [json_name="speedtestTcp64DownloadMbpsMax"];
+	optional .google.protobuf.FloatValue speedtest_tcp_64_upload_mbps_avg = 806 [json_name="speedtestTcp64UploadMbpsAvg"];
+	optional .google.protobuf.FloatValue speedtest_tcp_64_upload_mbps_max = 807 [json_name="speedtestTcp64UploadMbpsMax"];
+	optional .google.protobuf.UInt32Value dish_cell_id = 900 [json_name="dishCellId"];
+	optional .google.protobuf.BoolValue config_setup_complete = 1000 [json_name="configSetupComplete"];
+	optional .google.protobuf.BoolValue config_bands_split = 1001 [json_name="configBandsSplit"];
+	optional .google.protobuf.BoolValue config_is_repeater = 1002 [json_name="configIsRepeater"];
+	optional .google.protobuf.BoolValue config_open_network = 1003 [json_name="configOpenNetwork"];
+	optional .google.protobuf.BoolValue config_is_aviation = 1004 [json_name="configIsAviation"];
+	optional .google.protobuf.BoolValue config_secure_dns = 1005 [json_name="configSecureDns"];
+	optional .google.protobuf.BoolValue config_legacy = 1006 [json_name="configLegacy"];
+	optional .google.protobuf.BoolValue config_ap_mode = 1007 [json_name="configApMode"];
+	optional .google.protobuf.BoolValue config_dfs_enabled = 1008 [json_name="configDfsEnabled"];
+	optional .google.protobuf.BoolValue config_network_name_is_default = 1009 [json_name="configNetworkNameIsDefault"];
+	optional .google.protobuf.BoolValue config_remote_ssh_enabled = 1010 [json_name="configRemoteSshEnabled"];
+}
+
+message WifiGuestInfoRequest {
+}
+
+message WifiGuestInfoResponse {
+	optional bool is_guest = 1 [json_name="isGuest"];
+	optional bool is_online = 2 [json_name="isOnline"];
+	optional string router_hardware_version = 3 [json_name="routerHardwareVersion"];
+	optional string dish_hardware_version = 4 [json_name="dishHardwareVersion"];
+	optional bool is_router_aviation_conformed = 5 [json_name="isRouterAviationConformed"];
+}
+
+message WifiFactoryTestCommandRequest {
+	oneof command {
+		.SpaceX.API.Device.IwprivCommand iwpriv_command = 1 [json_name="iwprivCommand"];
+		.SpaceX.API.Device.IpLinkSetCommand ip_link_set_command = 2 [json_name="ipLinkSetCommand"];
+		.SpaceX.API.Device.IpAddrSetCommand ip_addr_set_command = 3 [json_name="ipAddrSetCommand"];
+	}
+}
+
+message WifiFactoryTestCommandResponse {
+	optional string response = 1 [json_name="response"];
+}
+
+message IwprivCommand {
+	optional string iface = 1 [json_name="iface"];
+	optional string arg = 2 [json_name="arg"];
+	optional .SpaceX.API.Device.IwprivCommand.Ioctl ioctl = 3 [json_name="ioctl"];
+	enum Ioctl {
+		IOCTL_SET = 0;
+		IOCTL_E2P = 1;
+		IOCTL_MAC = 3;
+		IOCTL_SX_ALLOW_5GHZ_HIGH = 4;
+	}
+}
+
+message IpLinkSetCommand {
+	optional string iface = 1 [json_name="iface"];
+	optional bool up = 2 [json_name="up"];
+}
+
+message IpAddrSetCommand {
+	optional string iface = 1 [json_name="iface"];
+	optional bool add = 2 [json_name="add"];
+	optional string cidr = 3 [json_name="cidr"];
+}
+
+message WifiStartLocalTelemProxyRequest {
+	optional int32 port = 1 [json_name="port"];
+}
+
+message WifiBackhaulStatsRequest {
+}
+
+message WifiBackhaulStatsResponse {
+	optional bool success = 1 [json_name="success"];
+	optional string bssid = 2 [json_name="bssid"];
+	optional .SpaceX.API.Device.IfaceType iface = 3 [json_name="iface"];
+	optional uint32 preference = 4 [json_name="preference"];
+	repeated .SpaceX.API.Device.WifiSiteSurveyResult siteSurveyScan = 5 [json_name="siteSurveyScan"];
+}
+
+message WifiToggleUmbilicalModeRequest {
+	optional bool enable = 1 [json_name="enable"];
+}
+
