@@ -4,8 +4,7 @@ package SpaceX.API.Device;
 
 option go_package = "spacex.com/api/device";
 
-import "spacex/api/device/common.proto";
-import "spacex/api/device/dish.proto";
+import "spacex_api/device/dish.proto";
 
 message TransceiverIFLoopbackTestRequest {
 	optional bool enable_if_loopback = 1 [json_name="enableIfLoopback"];
@@ -92,3 +91,4 @@ enum TransceiverTransmitBlankingState {
 	TB_ENABLED = 1;
 	TB_DISABLED = 2;
 }
+

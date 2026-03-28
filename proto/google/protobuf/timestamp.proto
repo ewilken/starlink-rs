@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package google.protobuf;
+
+option go_package = "google.golang.org/protobuf/types/known/timestamppb";
+
+message Timestamp {
+	optional int64 seconds = 1 [json_name="seconds"];
+	optional int32 nanos = 2 [json_name="nanos"];
+}
+

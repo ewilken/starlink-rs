@@ -5,5 +5,5 @@ authors = ["Elias Wilken <elias@wlkn.io>"]
 edition = "2018"
 
 [dependencies]
-prost = "0.12.3"
-prost-types = "0.12.3"
+prost = "0.13.1"
+prost-types = "0.13.1"

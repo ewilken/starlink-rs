@@ -1,0 +1,64 @@
+syntax = "proto3";
+
+package SpaceX.API.Device.Gnss;
+
+option go_package = "spacex.com/api/device";
+
+message Measurement {
+	optional int64 time_of_validity_ns = 1 [json_name="timeOfValidityNs"];
+	optional .SpaceX.API.Device.Gnss.SatelliteSystem satellite_system = 2 [json_name="satelliteSystem"];
+	optional int32 prn = 3 [json_name="prn"];
+	optional .SpaceX.API.Device.Gnss.Pseudorange pseudorange = 4 [json_name="pseudorange"];
+	optional .SpaceX.API.Device.Gnss.Ephemeris ephemeris = 5 [json_name="ephemeris"];
+}
+
+message Pseudorange {
+	optional double pseudorange_m = 1 [json_name="pseudorangeM"];
+	optional float pseudorange_variance_m2 = 2 [json_name="pseudorangeVarianceM2"];
+}
+
+message Ephemeris {
+	optional .SpaceX.API.Device.Gnss.SatnavTime sv_data_time = 1 [json_name="svDataTime"];
+	optional .SpaceX.API.Device.Gnss.CoordinateFrame coordinate_frame = 2 [json_name="coordinateFrame"];
+	optional .SpaceX.API.Device.Gnss.Vector3 sv_pos_m = 3 [json_name="svPosM"];
+	optional .SpaceX.API.Device.Gnss.Vector3 sv_vel_m = 4 [json_name="svVelM"];
+}
+
+message SatnavTime {
+	optional uint32 week_number = 1 [json_name="weekNumber"];
+	optional double seconds_of_week = 2 [json_name="secondsOfWeek"];
+	optional .SpaceX.API.Device.Gnss.TimeReference time_reference = 3 [json_name="timeReference"];
+}
+
+message Vector3 {
+	optional double x = 1 [json_name="x"];
+	optional double y = 2 [json_name="y"];
+	optional double z = 3 [json_name="z"];
+}
+
+enum TimeReference {
+	TIME_GPS = 0;
+	TIME_GALILEO = 1;
+	TIME_BEIDOU = 2;
+	TIME_GLONASS = 3;
+}
+
+enum SatelliteSystem {
+	SYS_GPS = 0;
+	SYS_GALILEO = 1;
+	SYS_GLONASS = 2;
+	SYS_BEIDOU = 3;
+	SYS_SBAS = 4;
+	SYS_QZSS = 5;
+	SYS_IRNSS = 6;
+	SYS_STARLINK = 7;
+	SYS_STARSHIELD = 8;
+}
+
+enum CoordinateFrame {
+	ITRF = 0;
+	ECEF = 1;
+	GTRF = 2;
+	PZ90 = 3;
+}
+

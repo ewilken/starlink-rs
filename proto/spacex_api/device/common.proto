@@ -1,0 +1,345 @@
+syntax = "proto3";
+
+package SpaceX.API.Device;
+
+option go_package = "spacex.com/api/device";
+
+message DeviceInfo {
+	optional string id = 1 [json_name="id"];
+	optional string hardware_version = 2 [json_name="hardwareVersion"];
+	optional .SpaceX.API.Device.HardwareIndex hardware_index = 16 [json_name="hardwareIndex"];
+	optional int32 board_rev = 14 [json_name="boardRev"];
+	optional string software_version = 3 [json_name="softwareVersion"];
+	optional string manufactured_version = 11 [json_name="manufacturedVersion"];
+	optional int64 generation_number = 12 [json_name="generationNumber"];
+	optional string country_code = 4 [json_name="countryCode"];
+	optional int32 utc_offset_s = 5 [json_name="utcOffsetS"];
+	optional bool software_partitions_equal = 6 [json_name="softwarePartitionsEqual"];
+	optional bool is_dev = 7 [json_name="isDev"];
+	optional int32 bootcount = 8 [json_name="bootcount"];
+	optional int32 anti_rollback_version = 9 [json_name="antiRollbackVersion"];
+	optional bool is_hitl = 10 [json_name="isHitl"];
+	optional .SpaceX.API.Device.BootInfo boot = 1001 [json_name="boot"];
+	optional bool dish_cohoused = 13 [json_name="dishCohoused"];
+	optional string build_id = 15 [json_name="buildId"];
+}
+
+message DeviceState {
+	optional uint64 uptime_s = 1 [json_name="uptimeS"];
+}
+
+message SignedData {
+	optional bytes data = 1 [json_name="data"];
+	optional bytes signature = 2 [json_name="signature"];
+}
+
+message GetNextIdRequest {
+}
+
+message GetNextIdResponse {
+	optional uint64 id = 1 [json_name="id"];
+	optional uint64 epoch_id = 2 [json_name="epochId"];
+}
+
+message BootInfo {
+	repeated .SpaceX.API.Device.BootInfo.CountByReasonEntry count_by_reason = 1 [json_name="countByReason"];
+	repeated .SpaceX.API.Device.BootInfo.CountByReasonDeltaEntry count_by_reason_delta = 4 [json_name="countByReasonDelta"];
+	optional .SpaceX.API.Device.BootReason last_reason = 2 [json_name="lastReason"];
+	optional int32 last_count = 3 [json_name="lastCount"];
+	optional bool crash_boot = 5 [json_name="crashBoot"];
+	optional int32 crash_boot_count = 6 [json_name="crashBootCount"];
+	optional string even_side_software_version = 7 [json_name="evenSideSoftwareVersion"];
+	optional string odd_side_software_version = 8 [json_name="oddSideSoftwareVersion"];
+	optional int32 api_version_odd_side = 9 [json_name="apiVersionOddSide"];
+	optional int32 api_version_even_side = 10 [json_name="apiVersionEvenSide"];
+message CountByReasonEntry {
+	optional int32 key = 1 [json_name="key"];
+	optional int32 value = 2 [json_name="value"];
+}
+
+message CountByReasonDeltaEntry {
+	optional int32 key = 1 [json_name="key"];
+	optional int32 value = 2 [json_name="value"];
+}
+
+}
+
+message PingTarget {
+	optional string service = 1 [json_name="service"];
+	optional string location = 2 [json_name="location"];
+	optional string address = 3 [json_name="address"];
+}
+
+message PingResult {
+	optional .SpaceX.API.Device.PingTarget target = 3 [json_name="target"];
+	optional float dropRate = 1 [json_name="dropRate"];
+	optional float latencyMs = 2 [json_name="latencyMs"];
+}
+
+message BondingChallenge {
+	optional string dish_id = 1 [json_name="dishId"];
+	optional string wifi_id = 2 [json_name="wifiId"];
+	optional bytes nonce = 3 [json_name="nonce"];
+}
+
+message AuthenticateRequest {
+	optional .SpaceX.API.Device.SignedData challenge = 1 [json_name="challenge"];
+}
+
+message ChallengeResponse {
+	optional bytes signature = 1 [json_name="signature"];
+	optional bytes certificate_chain = 2 [json_name="certificateChain"];
+}
+
+message NetworkInterface {
+	optional string name = 1 [json_name="name"];
+	optional bool up = 4 [json_name="up"];
+	optional string mac_address = 5 [json_name="macAddress"];
+	repeated string ipv4_addresses = 6 [json_name="ipv4Addresses"];
+	repeated string ipv6_addresses = 7 [json_name="ipv6Addresses"];
+	optional .SpaceX.API.Device.NetworkInterface.RxStats rx_stats = 2 [json_name="rxStats"];
+	optional .SpaceX.API.Device.NetworkInterface.TxStats tx_stats = 3 [json_name="txStats"];
+	oneof interface {
+		.SpaceX.API.Device.EthernetNetworkInterface ethernet = 1000 [json_name="ethernet"];
+		.SpaceX.API.Device.WifiNetworkInterface wifi = 1001 [json_name="wifi"];
+		.SpaceX.API.Device.BridgeNetworkInterface bridge = 1002 [json_name="bridge"];
+	}
+message RxStats {
+	optional uint64 bytes = 1 [json_name="bytes"];
+	optional uint64 packets = 2 [json_name="packets"];
+	optional uint64 frame_errors = 3 [json_name="frameErrors"];
+}
+
+message TxStats {
+	optional uint64 bytes = 1 [json_name="bytes"];
+	optional uint64 packets = 2 [json_name="packets"];
+}
+
+}
+
+message EthernetNetworkInterface {
+	optional bool link_detected = 1 [json_name="linkDetected"];
+	optional uint32 speed_mbps = 2 [json_name="speedMbps"];
+	optional bool autonegotiation_on = 3 [json_name="autonegotiationOn"];
+	optional .SpaceX.API.Device.EthernetNetworkInterface.Duplex duplex = 4 [json_name="duplex"];
+	enum Duplex {
+		UNKNOWN = 0;
+		HALF = 1;
+		FULL = 2;
+	}
+}
+
+message WifiNetworkInterface {
+	optional .SpaceX.API.Device.WifiNetworkInterface.InvalidPacketCounts invalid_packet_counts = 2 [json_name="invalidPacketCounts"];
+	optional uint32 channel = 3 [json_name="channel"];
+	optional uint32 missed_beacons = 8 [json_name="missedBeacons"];
+	optional double link_quality = 4 [json_name="linkQuality"];
+	optional double signal_level = 5 [json_name="signalLevel"];
+	optional double noise_level = 6 [json_name="noiseLevel"];
+message InvalidPacketCounts {
+	optional uint32 rx_invalid_nwid = 1 [json_name="rxInvalidNwid"];
+	optional uint32 rx_invalid_crypt = 2 [json_name="rxInvalidCrypt"];
+	optional uint32 rx_invalid_frag = 3 [json_name="rxInvalidFrag"];
+	optional uint32 tx_excessive_retries = 4 [json_name="txExcessiveRetries"];
+	optional uint32 invalid_misc = 5 [json_name="invalidMisc"];
+}
+
+}
+
+message BridgeNetworkInterface {
+	repeated string member_names = 1 [json_name="memberNames"];
+}
+
+message LLAPosition {
+	optional double lat = 1 [json_name="lat"];
+	optional double lon = 2 [json_name="lon"];
+	optional double alt = 3 [json_name="alt"];
+}
+
+message ECEFPosition {
+	optional double x = 1 [json_name="x"];
+	optional double y = 2 [json_name="y"];
+	optional double z = 3 [json_name="z"];
+}
+
+message Quaternion {
+	optional float q_scalar = 1 [json_name="qScalar"];
+	optional float q_x = 2 [json_name="qX"];
+	optional float q_y = 3 [json_name="qY"];
+	optional float q_z = 4 [json_name="qZ"];
+}
+
+message InitiateRemoteSshRequest {
+}
+
+message InitiateRemoteSshResponse {
+	optional uint32 port = 1 [json_name="port"];
+	optional string address = 2 [json_name="address"];
+	optional bytes stsafe = 3 [json_name="stsafe"];
+}
+
+message SoftwareUpdateRequest {
+	optional uint64 stream_id = 1 [json_name="streamId"];
+	optional bytes data = 2 [json_name="data"];
+	optional bool open = 3 [json_name="open"];
+	optional bool close = 4 [json_name="close"];
+}
+
+message SoftwareUpdateResponse {
+}
+
+message EventLog {
+	repeated .SpaceX.API.Device.UXEvent events = 1 [json_name="events"];
+	optional int64 start_timestamp_ns = 2 [json_name="startTimestampNs"];
+	optional int64 current_timestamp_ns = 3 [json_name="currentTimestampNs"];
+}
+
+message UXEvent {
+	optional .SpaceX.API.Device.EventSeverity severity = 1 [json_name="severity"];
+	optional .SpaceX.API.Device.EventReason reason = 2 [json_name="reason"];
+	optional int64 start_timestamp_ns = 3 [json_name="startTimestampNs"];
+	optional uint64 duration_ns = 4 [json_name="durationNs"];
+	oneof metadata {
+		.SpaceX.API.Device.ClientReconnectingOftenMetadata client_reconnecting_often_metadata = 5 [json_name="clientReconnectingOftenMetadata"];
+		.SpaceX.API.Device.ClientSwitchingBandMetadata client_switching_band_metadata = 6 [json_name="clientSwitchingBandMetadata"];
+		.SpaceX.API.Device.ClientSwitchingUpstreamMacMetadata client_switching_upstream_mac_metadata = 7 [json_name="clientSwitchingUpstreamMacMetadata"];
+		.SpaceX.API.Device.MeshConnectionChangingMetadata mesh_connection_changing_metadata = 8 [json_name="meshConnectionChangingMetadata"];
+		.SpaceX.API.Device.MeshBackhaulLowPhyMetadata mesh_backhaul_low_phy_metadata = 9 [json_name="meshBackhaulLowPhyMetadata"];
+		.SpaceX.API.Device.HighOverlappingBssMetadata high_overlapping_bss_metadata = 10 [json_name="highOverlappingBssMetadata"];
+		.SpaceX.API.Device.ClientExcessiveNetworkConnectionsMetadata client_excessive_network_connections_metadata = 11 [json_name="clientExcessiveNetworkConnectionsMetadata"];
+	}
+}
+
+message ClientReconnectingOftenMetadata {
+	optional uint32 clientId = 1 [json_name="clientId"];
+}
+
+message ClientExcessiveNetworkConnectionsMetadata {
+	optional uint32 clientId = 1 [json_name="clientId"];
+}
+
+message ClientSwitchingBandMetadata {
+	optional uint32 clientId = 1 [json_name="clientId"];
+	optional string fromBand = 2 [json_name="fromBand"];
+	optional string toBand = 3 [json_name="toBand"];
+}
+
+message ClientSwitchingUpstreamMacMetadata {
+	optional uint32 clientId = 1 [json_name="clientId"];
+}
+
+message MeshConnectionChangingMetadata {
+	optional string repeaterId = 1 [json_name="repeaterId"];
+	optional .SpaceX.API.Device.MeshConnectionChange change = 2 [json_name="change"];
+}
+
+message MeshBackhaulLowPhyMetadata {
+	repeated string repeaterIds = 1 [json_name="repeaterIds"];
+}
+
+message HighOverlappingBssStats {
+	optional string iface = 1 [json_name="iface"];
+	optional uint32 average_overlapping_bss_percentage = 2 [json_name="averageOverlappingBssPercentage"];
+}
+
+message HighOverlappingBssMetadata {
+	repeated .SpaceX.API.Device.HighOverlappingBssStats high_overlapping_bss_stats = 1 [json_name="highOverlappingBssStats"];
+}
+
+enum BootReason {
+	BOOT_REASON_UNKNOWN = 0;
+	FORGOTTEN = 1;
+	POWER_CYCLE = 2;
+	COMMAND = 3;
+	SOFTWARE_UPDATE = 4;
+	CONFIG_UPDATE = 5;
+	UPTIME_FDIR = 6;
+	REPEATER_FDIR = 7;
+	AVIATION_ETH_WAN_FDIR = 8;
+	KERNEL_PANIC = 9;
+	INTENTIONAL_KERNEL_PANIC = 14;
+	MCU_BRINGUP_FAILED_FDIR = 11;
+	AVIATION_OUTAGE_FDIR = 12;
+	SOFTWARE_WATCHDOG = 13;
+	HARDWARE_WATCHDOG = 15;
+	REPEATER_UNTRUSTED_FDIR = 16;
+}
+
+enum EventSeverity {
+	EVENT_SEVERITY_UNKNOWN = 0;
+	EVENT_SEVERITY_WARNING = 1;
+	EVENT_SEVERITY_CAUTION = 2;
+	EVENT_SEVERITY_ADVISORY = 3;
+}
+
+enum EventReason {
+	EVENT_REASON_UNKNOWN = 0;
+	EVENT_REASON_OUTAGE_UNKNOWN = 1;
+	EVENT_REASON_OUTAGE_BOOTING = 2;
+	EVENT_REASON_OUTAGE_STOWED = 3;
+	EVENT_REASON_OUTAGE_THERMAL_SHUTDOWN = 4;
+	EVENT_REASON_OUTAGE_NO_SCHEDULE = 5;
+	EVENT_REASON_OUTAGE_NO_SATS = 6;
+	EVENT_REASON_OUTAGE_OBSTRUCTED = 7;
+	EVENT_REASON_OUTAGE_NO_DOWNLINK = 8;
+	EVENT_REASON_OUTAGE_NO_PINGS = 9;
+	EVENT_REASON_OUTAGE_SLEEPING = 10;
+	EVENT_REASON_OUTAGE_MOVING_WHILE_NOT_ALLOWED = 11;
+	EVENT_REASON_OUTAGE_SKY_SEARCH = 19;
+	EVENT_REASON_UT_ALERT_RAIN_SNR_PERSISTENTLY_LOW = 22;
+	EVENT_REASON_UT_ALERT_ETH_NO_LINK = 23;
+	EVENT_REASON_UT_ALERT_ETH_SLOW_LINK = 24;
+	EVENT_REASON_UT_ALERT_ETH_SLOW_LINK_100 = 25;
+	EVENT_REASON_HIGH_DOWNLINK_PACKET_LOSS = 12;
+	EVENT_REASON_ROUTER_FACTORY_RESET = 13;
+	EVENT_REASON_ROUTER_REBOOT = 14;
+	EVENT_REASON_ROUTER_POWER_CYCLE = 15;
+	EVENT_REASON_ROUTER_CONFIG_UPDATE = 16;
+	EVENT_REASON_ROUTER_SOFTWARE_UPDATE = 17;
+	EVENT_REASON_ROUTER_THERMAL_THROTTLED = 18;
+	EVENT_REASON_ROUTER_REBOOT_CONFIG_UPDATE = 20;
+	EVENT_REASON_ROUTER_PUBLIC_IPV4_CHANGE = 21;
+	EVENT_REASON_ROUTER_POP_IPV4_PING_DROP = 26;
+	EVENT_REASON_ROUTER_POP_IPV6_PING_DROP = 27;
+	EVENT_REASON_ROUTER_LAN_ETH_HIGH_PACKET_LOSS = 28;
+	EVENT_REASON_ROUTER_WAN_ETH_HIGH_PACKET_LOSS = 29;
+	EVENT_REASON_ROUTER_DHCP_SERVER_FAIL_TO_START = 30;
+	EVENT_REASON_ROUTER_DHCP_SERVER_EXHAUSTED = 31;
+	EVENT_REASON_ROUTER_DNS_IPV4_SERVER_FAIL_TO_START = 32;
+	EVENT_REASON_ROUTER_DNS_IPV6_SERVER_FAIL_TO_START = 33;
+	EVENT_REASON_ROUTER_SET_CUSTOM_DNS_DISALLOWED = 34;
+	EVENT_REASON_ROUTER_SET_CUSTOM_DNS_ALLOWED = 35;
+	EVENT_REASON_ROUTER_MAX_WIRELESS_CLIENTS = 36;
+	EVENT_REASON_ROUTER_MAX_5GHIGH_WIRELESS_CLIENTS = 37;
+	EVENT_REASON_ROUTER_MESH_TOPOLOGY_CHANGING_OFTEN = 38;
+	EVENT_REASON_ROUTER_CONNTRACK_FULL = 39;
+	EVENT_REASON_ROUTER_DISH_PING_DROP = 40;
+	EVENT_REASON_ROUTER_UT_CONNECTED_TO_LAN = 41;
+	EVENT_REASON_CLIENT_RECONNECTING_OFTEN = 42;
+	EVENT_REASON_CLIENT_SWITCHING_BAND = 43;
+	EVENT_REASON_CLIENT_SWITCHING_UPSTREAM_MAC = 44;
+	EVENT_REASON_ROUTER_MESH_CONNECTION_CHANGING = 45;
+	EVENT_REASON_MESH_BACKHAUL_LOW_PHY = 46;
+	EVENT_REASON_ROUTER_HIGH_OVERLAPPING_BSS = 47;
+	EVENT_REASON_CLIENT_EXCESSIVE_NETWORK_CONNECTIONS = 48;
+}
+
+enum MeshConnectionChange {
+	REPEATER_CHANGE_UNKNOWN = 0;
+	REPEATER_CHANGE_DISCONNECTED = 1;
+}
+
+enum HardwareIndex {
+	UNKNOWN_HARDWARE_INDEX = 0;
+	ROUTER_GEN_1 = 1010;
+	ROUTER_GEN_2 = 1020;
+	ROUTER_MINI_COHOUSED_1 = 1021;
+	ROUTER_BLOCK_2_OR_3 = 1022;
+	ROUTER_GEN_3 = 1030;
+	ROUTER_BLOCK_4 = 1031;
+	ROUTER_BLOCK_4P1 = 1032;
+	ROUTER_MINI_1 = 1040;
+	ROUTER_MINI_COHOUSED_2 = 1041;
+	ROUTER_GEN_4 = 1050;
+}
+

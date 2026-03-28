@@ -2,17 +2,27 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     tonic_build::configure()
         .build_server(false)
         .protoc_arg("--experimental_allow_proto3_optional")
-        .compile(
+        .compile_protos(
             &[
-                "proto/spacex/api/common/status/status.proto",
-                "proto/spacex/api/device/command.proto",
-                "proto/spacex/api/device/common.proto",
-                "proto/spacex/api/device/device.proto",
-                "proto/spacex/api/device/dish.proto",
-                "proto/spacex/api/device/service.proto",
-                "proto/spacex/api/device/transceiver.proto",
-                "proto/spacex/api/device/wifi_config.proto",
-                "proto/spacex/api/device/wifi.proto",
+                "proto/google/protobuf/timestamp.proto",
+                "proto/google/protobuf/wrappers.proto",
+                "proto/spacex_api/common/status/status.proto",
+                "proto/spacex_api/device/services/unlock/service.proto",
+                "proto/spacex_api/device/account_shard.proto",
+                "proto/spacex_api/device/command.proto",
+                "proto/spacex_api/device/common.proto",
+                "proto/spacex_api/device/device.proto",
+                "proto/spacex_api/device/dish.proto",
+                "proto/spacex_api/device/dish_config.proto",
+                "proto/spacex_api/device/gnss.proto",
+                "proto/spacex_api/device/rssi_scan.proto",
+                "proto/spacex_api/device/transceiver.proto",
+                "proto/spacex_api/device/wifi.proto",
+                "proto/spacex_api/device/wifi_config.proto",
+                "proto/spacex_api/device/wifi_util.proto",
+                "proto/spacex_api/satellites/network/ut_disablement_codes.proto",
+                "proto/spacex_api/telemetron/public/common/time.proto",
+                "proto/spacex_api/telemetron/public/integrations/rate_limit_reason.proto",
             ],
             &["proto/"],
         )?;
